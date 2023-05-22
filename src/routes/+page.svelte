@@ -1,5 +1,5 @@
 <script lang="ts">
-
+  import { count } from '../stores';
 
   let messages = [
     {
@@ -26,4 +26,8 @@
     <div class="chat-bubble">{content}</div>
   </div>
   {/each}
+  <button class="btn" on:click={()=> count.update(()=> $count + 1)}>
+    {$count}
+  </button>
+  <a href="/route2">route 2</a>
 </div>
