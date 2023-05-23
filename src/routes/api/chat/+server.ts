@@ -23,9 +23,8 @@ export async function POST(event) {
     frequency_penalty: 0.0,
     presence_penalty: 0.0,
   });
-  console.log(response.data);
   const content = response.data.choices[0].message?.content || "";
-
+  console.log(content);
   const answer: Req.ChatCompletionRequestMessage = {
     content,
     role: "assistant"
