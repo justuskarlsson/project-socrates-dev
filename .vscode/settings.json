@@ -1,0 +1,7 @@
+{
+  "workbench.tree.indent": 16,
+  "workbench.editor.labelFormat": "short",
+  "explorer.sortOrder": "filesFirst",
+  "explorer.excludeGitIgnore": false,
+  "explorer.compactFolders": false
+}
