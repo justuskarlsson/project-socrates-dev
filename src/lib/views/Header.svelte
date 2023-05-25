@@ -10,11 +10,13 @@
 </script>
 
 
-<div class="w-[100%] flex space-y-1">
-  <select bind:value={selected} on:change={onSelectChange}>
-    <option disabled selected>Select a course</option>
-    {#each $courses as course, i}
-      <option value={i}>{course.name}</option>
-    {/each}
-  </select>
+<div class="w-[100%] flex items-center">
+  <div class="w-60 p-3">
+    <select class="w-full select select-bordered "
+    bind:value={selected} on:change={onSelectChange}>
+     {#each $courses as course, i}
+       <option value={i}>{course.name}</option>
+     {/each}
+   </select>
   </div>
+</div>

@@ -1,6 +1,8 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
 import { db, collection, getDocs, writable } from './stores'
-import type { DocumentData, DocumentReference } from 'firebase/firestore';
+
+// Subscribe to the page store to get the current route parameters
+
 
 export interface Message {
   role: ChatCompletionRequestMessageRoleEnum;
