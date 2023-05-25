@@ -3,6 +3,7 @@
 	import '../app.css';
 
   import Sidebar from '$lib/views/Sidebar.svelte';
+	import Header from '$lib/views/Header.svelte';
 </script>
 
 <style>
@@ -19,7 +20,7 @@
 
 <div class="h-screen flex flex-col">
   <div class="header bg-blue-100">
-    
+    <Header />
   </div>
   <div class="flex-grow flex">
     <div class="sidebar bg-gray-100">

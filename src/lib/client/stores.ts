@@ -13,7 +13,7 @@ const firebaseConfig = {
   measurementId: "G-H518HFTG5R"
 };
 
-export { collection, getDocs }
+export { collection, getDocs, writable }
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
@@ -21,31 +21,9 @@ export const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 
-// Access your Firestore data
-// const querySnapshot = await getDocs(collection(db, "your-collection-name"));
-// querySnapshot.forEach((doc) => {
-//   console.log(`${doc.id} => ${doc.data()}`);
-// });
-
-// function listen(){
-//   // Get a reference to the lessons subcollection
-//   const lessonsCollectionRef = collection(db, 'Courses', courseRef.id, 'Lessons');
-
-//   // Listen for changes
-//   const unsubscribe = onSnapshot(lessonsCollectionRef, (snapshot) => {
-//     snapshot.docChanges().forEach((change) => {
-//       if (change.type === 'added') {
-//         console.log('New lesson: ', change.doc.data());
-//       }
-//       if (change.type === 'modified') {
-//         console.log('Modified lesson: ', change.doc.data());
-//       }
-//       if (change.type === 'removed') {
-//         console.log('Removed lesson: ', change.doc.data());
-//       }
-//     });
-//   });
-// }
-
 export const count = writable(0);
+
+export class Collection {
+
+};
 
