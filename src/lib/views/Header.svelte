@@ -6,6 +6,7 @@
   const onSelectChange = () => {
     console.log(selected);
     selectedCourse.set($courses[selected]);
+    window.history.pushState(null, '', `./${$courses[selected].name}`);
   };
 </script>
 
