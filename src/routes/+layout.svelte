@@ -4,6 +4,9 @@
 
   import Sidebar from '$lib/views/Sidebar.svelte';
 	import Header from '$lib/views/Header.svelte';
+
+  export const ssr = false;
+  export const prerender = false;
 </script>
 
 <style>
@@ -18,17 +21,5 @@
 
 </style>
 
-<div class="h-screen flex flex-col">
-  <div class="header bg-blue-100">
-    <Header />
-  </div>
-  <div class="flex-grow flex">
-    <div class="sidebar bg-gray-100">
-      <Sidebar />
-    </div>
-    
-    <div class="flex-grow p-8 bg-yellow-100">
-      <slot></slot>
-    </div>
-  </div>
-</div>
+
+    <slot/>
