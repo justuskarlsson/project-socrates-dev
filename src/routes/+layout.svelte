@@ -5,8 +5,6 @@
   import Sidebar from '$lib/views/Sidebar.svelte';
 	import Header from '$lib/views/Header.svelte';
 
-  export const ssr = false;
-  export const prerender = false;
 </script>
 
 <style>

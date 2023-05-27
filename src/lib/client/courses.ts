@@ -23,7 +23,7 @@ export interface Course {
 };
 
 
-async function getCourses() : Promise<Course[]> {
+export async function getCourses() : Promise<Course[]> {
   const courseSnapshot = await getDocs(collection(db, 'courses'));
   const courseList = courseSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Course) );
   return courseList;
@@ -32,21 +32,27 @@ async function getCourses() : Promise<Course[]> {
 export const courses = writable<Course[]>([]);
 
 export const selectedCourse = writable<Course>(undefined);
+export const selectedLesson = writable<Lesson>(undefined);
 
+export const lessons = writable<Lesson[]>([]);
+
+export async function updateLessons(course: Course){
+  const lessonsSnapshot = await getDocs(collection(db, 'courses', course.id, 'lessons'));
+  const lessonList = lessonsSnapshot.docs.map(doc => doc.data() as Lesson);
+  lessons.set(lessonList);
+  course.lessons = lessonList;
+}
 
 selectedCourse.subscribe(async (course: Course) => {
-  console.log("Selected course:");
-  console.log(course);
+  console.log("Selected course:", course);
   if (course && course.lessons === undefined) {
-    const lessonsSnapshot = await getDocs(collection(db, 'courses', course.id, 'lessons'));
-    const lessonList = lessonsSnapshot.docs.map(doc => doc.data() as Lesson);
-    course.lessons = lessonList;
-    selectedCourse.set(course);
+    await updateLessons(course);
   }
 })
 
+
+
 getCourses().then((_courses) => {
-  console.log(_courses);
   courses.set(_courses);
   if (_courses.length) {
     selectedCourse.set(_courses[0])

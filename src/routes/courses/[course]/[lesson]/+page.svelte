@@ -3,19 +3,16 @@
 
 <script lang="ts">
     import type * as Req from '$lib/request_types'
-    import { selectedCourse, courses } from "$lib/client/courses"
+    import { selectedLesson, courses, lessons } from "$lib/client/courses"
 
     import { page } from "$app/stores"
     
     $: {
-      console.log("Page params", $page.params)
-      const name = $page.params.course.replaceAll("-", " ");
-      const course = $courses.find((c) => c.name === name);
-      console.log("Name", name);
-      console.log($courses, course);
-      if (course && $selectedCourse.name !== name) {
-        console.log("Selected course set: ", course);
-        selectedCourse.set(course);
+      const idx = parseInt($page.params.lesson, 10);
+      if (idx < $lessons.length) {
+        const lesson = $lessons[idx];
+        console.log("Selected lesson: ", lesson);
+        selectedLesson.set(lesson);
       }
     }
 
@@ -51,6 +48,7 @@
   </script>
   
     <div class=" flex flex-col h-full">
+        {$selectedLesson.description}
       {#each messages as {role, content}}
       <div class="chat chat-start">
         <div class="chat-image avatar">
