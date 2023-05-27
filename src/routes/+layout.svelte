@@ -1,9 +1,8 @@
 
 <script>
 	import '../app.css';
-
-  import Sidebar from '$lib/views/Sidebar.svelte';
-	import Header from '$lib/views/Header.svelte';
+  import {user} from '$lib/client/stores'
+	import Login from '$lib/views/Login.svelte';
 
 </script>
 
@@ -11,13 +10,12 @@
   .header {
     height: 80px;
   }
-  .sidebar {
-    width: 260px;
-    display: flex;
-    justify-content: center;
-  }
 
 </style>
 
-
-    <slot/>
+    {#if $user}
+      <slot/>
+    {:else}
+       <Login />
+    {/if}
+    

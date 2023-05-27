@@ -16,7 +16,7 @@ export interface Lesson {
   id: string;
   name: string;
   description: string;
-
+  messages?: Message[];
 };
 
 export interface Course {
@@ -33,11 +33,15 @@ export async function addMessage(message: Message) {
 }
 
 export async function getLessonMessages(lesson: Lesson) {
+  if (lesson.messages) {
+    return lesson.messages;
+  }
   let snapshot = await getDocs(query(
     collection(db, "messages"),
     where("lessonId", "==", lesson.id)
   ));
   const messages = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Message) );
+  lesson.messages = messages;
   return messages;
 }
 

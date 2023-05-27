@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 import  { initializeApp,  } from "firebase/app";
 import { getFirestore, collection, addDoc, getDocs, onSnapshot  } from "firebase/firestore";
+import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 
 const firebaseConfig = {
   apiKey: "AIzaSyBC7z3ZRT3av1DqpeT7Zqc0KYNbStvPI4A",
@@ -13,6 +14,8 @@ const firebaseConfig = {
   measurementId: "G-H518HFTG5R"
 };
 
+
+
 export { collection, getDocs, writable }
 
 // Initialize Firebase
@@ -20,8 +23,14 @@ export const app = initializeApp(firebaseConfig);
 
 
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 export const count = writable(0);
+export const user = writable<User | null>(null);
+
+onAuthStateChanged(auth, (firebaseUser)=> {
+  user.set(firebaseUser);
+});
 
 export class Collection {
 
