@@ -6,6 +6,7 @@
     import { selectedLesson, courses, lessons } from "$lib/client/courses"
 
     import { page } from "$app/stores"
+	import Header from '$lib/views/Header.svelte';
     
     $: {
       const idx = parseInt($page.params.lesson, 10);
@@ -48,7 +49,7 @@
   </script>
   
     <div class=" flex flex-col h-full">
-        {$selectedLesson.description}
+        {$selectedLesson?.description || "..."}
       {#each messages as {role, content}}
       <div class="chat chat-start">
         <div class="chat-image avatar">
