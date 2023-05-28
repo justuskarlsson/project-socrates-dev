@@ -1,5 +1,5 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
-import { db } from './firebase'
+import { db, getWithTimestamp } from './firebase'
 import { writable } from 'svelte/store'
 import { collection, getDocs, query, where  } from "firebase/firestore";
 import { type Lesson, lessons } from './lessons';
@@ -31,11 +31,11 @@ export async function getCourses() : Promise<Course[]> {
 
 
 export async function updateLessons(course: Course){
-  const lessonsSnapshot = await getDocs(query(
+  const snapshot = await getDocs(query(
     collection(db, 'lessons'),
     where("courseId", "==", course.id)
   ));
-  const lessonList = lessonsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}) as Lesson);
+  const lessonList = await getWithTimestamp(snapshot) as Lesson [];
   lessons.set(lessonList);
   course.lessons = lessonList;
 }

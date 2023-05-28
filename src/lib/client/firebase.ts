@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 import  { initializeApp,  } from "firebase/app";
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, getDocs, collection, addDoc, serverTimestamp, type QuerySnapshot, type DocumentData } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -36,6 +36,18 @@ export async function addWithTimestamp(col: string, doc: any){
   console.log(`Added doc: ${res}`);
   return res;
 }
+
+export async function getWithTimestamp(snapshot: QuerySnapshot<DocumentData>){
+  const list = snapshot.docs.map(doc => ({
+    id: doc.id, 
+    ...doc.data(),
+    timestamp: doc.data().timestamp.toDate()
+  }));
+
+  list.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  return list;
+}
+
 
 export class Collection {
 

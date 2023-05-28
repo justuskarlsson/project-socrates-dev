@@ -1,4 +1,4 @@
-import { addWithTimestamp, db } from './firebase'
+import { addWithTimestamp, db, getWithTimestamp } from './firebase'
 import { collection, getDocs, addDoc, query, where, serverTimestamp } from "firebase/firestore";
 import type { Message } from './messages';
 import { writable } from 'svelte/store';
@@ -30,14 +30,8 @@ export async function getLessonMessages(lesson: Lesson) {
     collection(db, "messages"),
     where("lessonId", "==", lesson.id)
   ));
-
-  const messages = snapshot.docs.map(doc => ({
-    id: doc.id, 
-    ...doc.data(),
-    timestamp: doc.data().timestamp.toDate()
-  } as Message));
-
-  messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  
+  const messages = await getWithTimestamp(snapshot) as Message[];
   lesson.messages = messages;
   return messages;
 }
