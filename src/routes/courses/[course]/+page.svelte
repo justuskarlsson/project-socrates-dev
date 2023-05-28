@@ -3,10 +3,11 @@
 
 <script lang="ts">
 	import FlashCard from '$lib/components/FlashCard.svelte';
-    import type * as Req from '$lib/request_types'
-    import { selectedCourse, courses } from "$lib/client/courses"
+  import type * as Req from '$lib/request_types'
+  import { selectedCourse, courses } from "$lib/client/courses"
 
-    import { page } from "$app/stores"
+  import { page } from "$app/stores"
+	import DataInput from '$lib/components/DataInput.svelte';
     
     $: {
       console.log("Page params", $page.params)
@@ -55,6 +56,9 @@
       }
     ]
 
+  function onData(data: any) {
+    console.log(data);
+  }
     
 </script>
 
@@ -62,9 +66,12 @@
 
 </style>
 
+
+<DataInput onData={onData} label="Add flashcards" />
 <div class="container flex flex-wrap">
   {#each flashcards as flashcard}
   <FlashCard {...flashcard} />
   {/each}
 </div>
+
 
