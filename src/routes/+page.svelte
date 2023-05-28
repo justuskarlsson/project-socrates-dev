@@ -19,8 +19,6 @@
     {/each}
   </ul>
 
-  <button class="btn" on:click={()=> addGermanCourse()}>
-    Import
-  </button>
+
 </div>
 

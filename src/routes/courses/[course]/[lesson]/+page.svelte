@@ -10,6 +10,7 @@
   import { messages, type Message, addMessage} from '$lib/client/messages'
 
   import { page } from "$app/stores"
+	import type { ChatCompletionRequestMessage } from '$lib/request_types';
   
 
   let inputContent = "";
@@ -27,6 +28,11 @@
     }
   }
 
+  const SYS_MESSAGE: ChatCompletionRequestMessage = {
+    role: "system",
+    content: "You are a teacher. You should be factual but also pedagogic. If the student strays away from the topic of the lesson, you will try to steer him/her back. Don't be too long-winded in your responses."
+  };
+
   async function sendChat(content: string) {
     inputContent = "";
     const old_messages = [...$messages];
@@ -43,10 +49,13 @@
     ]))
     
     const body: Req.Chat = { 
-      messages: $messages.map(({content, role}) => ({
-        content,
-        role
-      }))
+      messages: [
+        SYS_MESSAGE,
+        ...$messages.map(({content, role}) => ({
+          content,
+          role
+        }))
+      ]
     };
 
     const res = await fetch("/api/chat", {
@@ -77,6 +86,8 @@
 
   function formatContent(content: string) {
     content = content.replaceAll("\n", "<br>");
+    content = content.replace("```", "<code>");
+    content = content.replace("```", "</code>");
     return content;
   }
   
