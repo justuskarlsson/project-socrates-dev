@@ -1,19 +1,29 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
-import { db } from './firebase'
+import { db, addWithTimestamp } from './firebase'
 import { writable } from 'svelte/store';
 import { collection, addDoc } from "firebase/firestore";
 
 export interface Message {
-  id?: string;
+  id: string;
+  timestamp: Date;
+  lessonId: string;
+  role: ChatCompletionRequestMessageRoleEnum;
+  content: string;
+};
+export interface MessageWrite {
   lessonId: string;
   role: ChatCompletionRequestMessageRoleEnum;
   content: string;
 };
 
-export async function addMessage(message: Message) {
-  let ref = await addDoc(collection(db, "messages"), message);
-  message.id = ref.id;
-  return message;
+export const messages = writable<Message[]>([]);
+
+export async function addMessage(message: MessageWrite) : Promise<Message> {
+  let ref = await addWithTimestamp("messages", message)
+  return {
+    id: ref.id,
+    timestamp: new Date(),
+    ...message,
+  };
 }
 
-export const messages = writable<Message[]>([]);

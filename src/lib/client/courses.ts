@@ -1,7 +1,7 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
 import { db } from './firebase'
 import { writable } from 'svelte/store'
-import { collection, getDocs  } from "firebase/firestore";
+import { collection, getDocs, query, where  } from "firebase/firestore";
 import { type Lesson, lessons } from './lessons';
 
 // Subscribe to the page store to get the current route parameters
@@ -9,9 +9,15 @@ import { type Lesson, lessons } from './lessons';
 
 export interface Course {
   id: string;
+  timestamp: Date;
   name: string;
-  lessons: Lesson[];
+  lessons?: Lesson[];
 };
+
+export interface CourseWrite {
+  name: string;
+};
+
 
 export const courses = writable<Course[]>([]);
 
@@ -25,7 +31,10 @@ export async function getCourses() : Promise<Course[]> {
 
 
 export async function updateLessons(course: Course){
-  const lessonsSnapshot = await getDocs(collection(db, 'courses', course.id, 'lessons'));
+  const lessonsSnapshot = await getDocs(query(
+    collection(db, 'lessons'),
+    where("courseId", "==", course.id)
+  ));
   const lessonList = lessonsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}) as Lesson);
   lessons.set(lessonList);
   course.lessons = lessonList;

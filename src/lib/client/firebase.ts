@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
 import  { initializeApp,  } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -26,6 +26,16 @@ export const user = writable<User | null>(null);
 onAuthStateChanged(auth, (firebaseUser)=> {
   user.set(firebaseUser);
 });
+
+
+export async function addWithTimestamp(col: string, doc: any){
+  let res = await addDoc(collection(db, col), {
+    ...doc,
+    timestamp: serverTimestamp()
+  });
+  console.log(`Added doc: ${res}`);
+  return res;
+}
 
 export class Collection {
 

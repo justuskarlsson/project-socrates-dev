@@ -1,5 +1,6 @@
 <script lang="ts">
   import { courses } from "$lib/client/courses"
+  import {addGermanCourse} from '$lib/client/import'
 
 </script>
 
@@ -17,5 +18,9 @@
       </li>
     {/each}
   </ul>
+
+  <button class="btn" on:click={()=> addGermanCourse()}>
+    Import
+  </button>
 </div>
 

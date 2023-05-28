@@ -1,23 +1,12 @@
 import { collection, addDoc } from "firebase/firestore";
-import { db } from './firebase'
+import { addWithTimestamp } from './firebase'
 
 
 export async function addGermanCourse(){
-  let courseRef;
-  try {
-    courseRef = await addDoc(collection(db, 'courses'), {
-      name: 'German 101'
-    });
-    console.log(`New course created with ID: ${courseRef.id}`);
-  } catch (e) {
-    console.error('Error adding document: ', e);
-  }
-
-  if (courseRef === undefined) {
-    console.error('Error adding document: ');
-    return;
-  }
-  
+  let courseRef = await addWithTimestamp('courses', {
+    name: 'German 101'
+  });
+  console.log(`New course created with ID: ${courseRef.id}`);
   // Define the lessons
   const lessons = [
     {
@@ -65,7 +54,10 @@ export async function addGermanCourse(){
   // Add the lessons to the course
   for (const lesson of lessons) {
     try {
-      await addDoc(collection(db, 'courses', courseRef.id, 'lessons'), lesson);
+      await addWithTimestamp('lessons', {
+        ...lesson,
+        courseId: courseRef.id,
+      });
       console.log(`Added lesson: ${lesson.name}`);
     } catch (e) {
       console.error('Error adding lesson: ', e);
