@@ -3,10 +3,14 @@
 
 <script lang="ts">
   import type * as Req from '$lib/request_types'
-  import { selectedLesson, courses, lessons, messages, addMessage, type Message, getLessonMessages } from "$lib/client/courses"
+  import {
+    selectedLesson, lessons, getLessonMessages 
+  } from "$lib/client/lessons";
+
+  import { messages, type Message, addMessage} from '$lib/client/messages'
 
   import { page } from "$app/stores"
-  import { user } from '$lib/client/stores';
+  import { user } from '$lib/client/firebase';
   import { onMount } from 'svelte';
   
 

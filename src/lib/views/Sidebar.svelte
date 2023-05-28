@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lessons, selectedLesson, selectedCourse } from "$lib/client/courses"
+  import { lessons, selectedLesson } from "$lib/client/lessons"
 
   import { page } from '$app/stores'
 

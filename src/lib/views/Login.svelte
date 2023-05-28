@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { auth } from "$lib/client/stores"
+  import { auth } from "$lib/client/firebase"
   import { createUserWithEmailAndPassword, signInWithEmailAndPassword} from 'firebase/auth'
 
   let email = "";

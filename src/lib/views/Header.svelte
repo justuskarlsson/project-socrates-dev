@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { courses, selectedCourse, type Course } from "$lib/client/courses";
+  import { courses, selectedCourse } from "$lib/client/courses";
   
   let selected: number = 0;
 

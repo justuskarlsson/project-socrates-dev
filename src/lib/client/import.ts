@@ -1,5 +1,5 @@
 import { collection, addDoc } from "firebase/firestore";
-import { db } from './stores'
+import { db } from './firebase'
 
 
 export async function addGermanCourse(){

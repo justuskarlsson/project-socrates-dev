@@ -1,49 +1,21 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
-import { db, writable } from './stores'
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, where  } from "firebase/firestore";
+import { db } from './firebase'
+import { writable } from 'svelte/store'
+import { collection, getDocs  } from "firebase/firestore";
+import { type Lesson, lessons } from './lessons';
 
 // Subscribe to the page store to get the current route parameters
 
-
-export interface Message {
-  id?: string;
-  lessonId: string;
-  role: ChatCompletionRequestMessageRoleEnum;
-  content: string;
-};
-
-export interface Lesson {
-  id: string;
-  name: string;
-  description: string;
-  messages?: Message[];
-};
 
 export interface Course {
   id: string;
   name: string;
   lessons: Lesson[];
-
 };
 
-export async function addMessage(message: Message) {
-  let ref = await addDoc(collection(db, "messages"), message);
-  message.id = ref.id;
-  return message;
-}
+export const courses = writable<Course[]>([]);
 
-export async function getLessonMessages(lesson: Lesson) {
-  if (lesson.messages) {
-    return lesson.messages;
-  }
-  let snapshot = await getDocs(query(
-    collection(db, "messages"),
-    where("lessonId", "==", lesson.id)
-  ));
-  const messages = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Message) );
-  lesson.messages = messages;
-  return messages;
-}
+export const selectedCourse = writable<Course>(undefined);
 
 export async function getCourses() : Promise<Course[]> {
   const courseSnapshot = await getDocs(collection(db, 'courses'));
@@ -51,13 +23,6 @@ export async function getCourses() : Promise<Course[]> {
   return courseList;
 }
 
-export const courses = writable<Course[]>([]);
-export const messages = writable<Message[]>([]);
-
-export const selectedCourse = writable<Course>(undefined);
-export const selectedLesson = writable<Lesson>(undefined);
-
-export const lessons = writable<Lesson[]>([]);
 
 export async function updateLessons(course: Course){
   const lessonsSnapshot = await getDocs(collection(db, 'courses', course.id, 'lessons'));
@@ -72,8 +37,6 @@ selectedCourse.subscribe(async (course: Course) => {
     await updateLessons(course);
   }
 })
-
-
 
 getCourses().then((_courses) => {
   courses.set(_courses);

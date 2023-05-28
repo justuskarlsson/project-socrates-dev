@@ -1,7 +1,7 @@
 
 <script>
 	import '../app.css';
-  import {user} from '$lib/client/stores'
+  import { user } from '$lib/client/firebase'
 	import Login from '$lib/views/Login.svelte';
 
 </script>
