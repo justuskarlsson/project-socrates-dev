@@ -2,6 +2,7 @@
 
 
 <script lang="ts">
+	import { courses, coursesLoading, selectCourseFromURL, selectedCourse } from '$lib/client/courses';
   import type * as Req from '$lib/request_types'
   import {
     selectedLesson, lessons, getLessonMessages 
@@ -11,9 +12,18 @@
 
   import { page } from "$app/stores"
 	import type { ChatCompletionRequestMessage } from '$lib/request_types';
+	import { onMount } from 'svelte';
   
 
   let inputContent = "";
+
+
+  onMount(async () => {
+    await coursesLoading();
+		await selectCourseFromURL($page.params.course,
+			$selectedCourse, $courses);
+	})
+
 
   $: {
     const idx = parseInt($page.params.lesson, 10);

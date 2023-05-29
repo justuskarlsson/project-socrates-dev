@@ -45,11 +45,7 @@ export const courses = writable<Course[]>([]);
 
 export const selectedCourse = writable<Course>(undefined);
 
-export async function getCourses() : Promise<Course[]> {
-  const courseSnapshot = await getDocs(collection(db, 'courses'));
-  const courseList = courseSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Course) );
-  return courseList;
-}
+
 
 export async function getCourseFlashcards(course: Course) {
   return getCourseEntity(course, "flashcards") as Promise<Flashcard[]>;
@@ -67,15 +63,46 @@ export async function updateLessons(course: Course){
 }
 
 selectedCourse.subscribe(async (course: Course) => {
-  console.log("Selected course:", course);
   if (course && course.lessons === undefined) {
     await updateLessons(course);
   }
 })
 
+
+async function getCourses() : Promise<Course[]> {
+  const courseSnapshot = await getDocs(collection(db, 'courses'));
+  const courseList = courseSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Course) );
+  return courseList;
+}
+
+const coursesLoadedResolver: { resolve?: () => void } = {};
+let coursesLoaded = new Promise<void>((resolve) => {
+  coursesLoadedResolver.resolve = resolve;
+});
+
+
 getCourses().then((_courses) => {
   courses.set(_courses);
-  if (_courses.length) {
-    selectedCourse.set(_courses[0])
-  }
+  coursesLoadedResolver.resolve!();
 });
+
+
+export function coursesLoading() : Promise<void> {
+  return coursesLoaded;
+}
+
+export async function selectCourseFromURL(
+  urlName: string, curCourse: Course | undefined,
+  courses: Course[]
+) {
+  const name = urlName.replaceAll('-', ' ');
+  const course = courses.find((c) => c.name === name);
+  if (!course) {
+    console.warn("Course name:", name, "not found");
+    return
+  }
+  // If we got here from /lesson or something
+  if (curCourse?.name !== name) {
+    selectedCourse.set(course);
+  }
+}
