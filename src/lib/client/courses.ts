@@ -3,6 +3,7 @@ import { db, getWithTimestamp } from './firebase'
 import { writable } from 'svelte/store'
 import { collection, getDocs, query, where  } from "firebase/firestore";
 import { type Lesson, lessons } from './lessons';
+import type { Flashcard } from './flashcards';
 
 // Subscribe to the page store to get the current route parameters
 
@@ -12,11 +13,32 @@ export interface Course {
   timestamp: Date;
   name: string;
   lessons?: Lesson[];
+  flashcards?: Flashcard[];
 };
 
 export interface CourseWrite {
   name: string;
 };
+
+
+export async function getCourseEntity(
+  course: Course,
+  entity: "lessons" | "flashcards") 
+{
+  if (course[entity]) {
+    return course[entity];
+  }
+  
+  let snapshot = await getDocs(query(
+    collection(db, entity),
+    where("courseId", "==", course.id)
+  ));
+  
+  const values = await getWithTimestamp(snapshot) as any[];
+  course[entity] = values;
+  return values;
+}
+
 
 
 export const courses = writable<Course[]>([]);
@@ -27,6 +49,10 @@ export async function getCourses() : Promise<Course[]> {
   const courseSnapshot = await getDocs(collection(db, 'courses'));
   const courseList = courseSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Course) );
   return courseList;
+}
+
+export async function getCourseFlashcards(course: Course) {
+  return getCourseEntity(course, "flashcards") as Promise<Flashcard[]>;
 }
 
 

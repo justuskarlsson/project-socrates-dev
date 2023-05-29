@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let front: string;
-  export let back: string;
+	import type { Flashcard } from '$lib/client/flashcards';
+  export let data: Flashcard;
 
   let flipped = false;
   function flip(){
@@ -31,6 +31,6 @@
   >
   <div class="card-body text-3xl text-center centered select-none"
   >
-    {flipped ? back : front}
+    {flipped ? data.back : data.front}
   </div>
 </div>
