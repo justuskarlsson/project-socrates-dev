@@ -4,6 +4,7 @@ import { writable } from 'svelte/store'
 import { collection, getDocs, query, where  } from "firebase/firestore";
 import { type Lesson, lessons } from './lessons';
 import type { Flashcard } from './flashcards';
+import { createLoadingPromise } from './util';
 
 // Subscribe to the page store to get the current route parameters
 
@@ -60,31 +61,20 @@ export async function updateLessons(course: Course){
   const lessonList = await getWithTimestamp(snapshot) as Lesson [];
   lessons.set(lessonList);
   course.lessons = lessonList;
+  // GPT-4: HERE I want to notify that we have some lessons loaded
 }
 
-selectedCourse.subscribe(async (course: Course) => {
-  if (course && course.lessons === undefined) {
-    await updateLessons(course);
-  }
-})
 
 
 async function getCourses() : Promise<Course[]> {
   const courseSnapshot = await getDocs(collection(db, 'courses'));
   const courseList = courseSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()} as Course) );
+  courses.set(courseList);
+  
   return courseList;
 }
 
-const coursesLoadedResolver: { resolve?: () => void } = {};
-let coursesLoaded = new Promise<void>((resolve) => {
-  coursesLoadedResolver.resolve = resolve;
-});
-
-
-getCourses().then((_courses) => {
-  courses.set(_courses);
-  coursesLoadedResolver.resolve!();
-});
+const coursesLoaded = createLoadingPromise(getCourses);
 
 
 export function coursesLoading() : Promise<void> {
@@ -104,5 +94,6 @@ export async function selectCourseFromURL(
   // If we got here from /lesson or something
   if (curCourse?.name !== name) {
     selectedCourse.set(course);
+    await updateLessons(course);
   }
 }

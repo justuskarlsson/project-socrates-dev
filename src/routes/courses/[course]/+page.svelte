@@ -9,7 +9,6 @@
 
 
 	onMount(async () => {
-		console.log("MOUNTING");
 		await coursesLoading();
 		await selectCourseFromURL($page.params.course,
 			$selectedCourse, $courses);

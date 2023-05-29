@@ -17,14 +17,13 @@
 
   let inputContent = "";
 
-
   onMount(async () => {
     await coursesLoading();
 		await selectCourseFromURL($page.params.course,
 			$selectedCourse, $courses);
 	})
 
-
+  // Does not remount
   $: {
     const idx = parseInt($page.params.lesson, 10);
     if (idx < $lessons.length) {
