@@ -67,22 +67,40 @@
       ]
     };
 
-    const res = await fetch("/api/chat", {
+    const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+      'Content-Type': 'text/event-stream'
+      },
       body: JSON.stringify(body)
-    })
+    });
+    let answer = {
+      role: "assistant",
+      content: "",
+      lessonId
+    } as Message;
+
+    const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader();
+    while (true) {
+      const {value, done} = await reader.read();
+      if (done) break;
+      const chunks = value.split("data: ");
+      for (let i = 1; i < chunks.length; i++) {
+        if (chunks[i].startsWith("[DONE]")) {
+          break;
+        }
+        const data = JSON.parse(chunks[i]);
+        const delta = data.choices[0].delta;
+        if ("content" in delta) {
+          answer.content += delta.content;
+        }
+      }
+      messages.set([...old_messages, user_message, answer]);
+    }
     user_message = await addMessage(user_message);
-    let answers_org = await res.json() as Req.ChatCompletionRequestMessage[];
-    let new_messages = answers_org.map(({content, role}) => ({
-      content, role, lessonId
-    })) as Message[];
+    answer = await addMessage(answer);
   
-    new_messages = await Promise.all(new_messages.map(async (message) => {
-      let updated_message = await addMessage(message);
-      return updated_message;
-    }));
-    messages.set([...old_messages, user_message, ...new_messages]);
+    messages.set([...old_messages, user_message, answer]);
   }
   
 

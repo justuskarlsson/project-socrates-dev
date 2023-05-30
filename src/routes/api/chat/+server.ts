@@ -1,20 +1,14 @@
-import { json } from "@sveltejs/kit"
 import { openai, model } from "$lib/server/server"
 import type * as Req from '$lib/request_types'
 
-export async function GET(event) {
-  const res = await openai.listModels();
-  return json({
-    response: 'Hello!',
-  });
-}
 
 
 
 export async function POST(event) {
   const body = await event.request.json() as Req.Chat;
 
-  const response = await openai.createChatCompletion({
+  // Make a streaming request to OpenAI
+  const apiResponse = await openai.createChatCompletion({
     model: model,
     messages: body.messages,
     temperature: 0.7,
@@ -22,14 +16,28 @@ export async function POST(event) {
     top_p: 1.0,
     frequency_penalty: 0.0,
     presence_penalty: 0.0,
+    stream: true,
+  }, { responseType: 'stream' }) as any;
+  console.log(apiResponse)
+  const readableStream = new ReadableStream({
+    start(controller) {
+      // Forward the data from the API to the client
+      apiResponse.data.on('data', (data: any) => {
+        controller.enqueue(data); // SSE format
+      });
+
+      // When the API request is done, close the stream
+      apiResponse.data.on('end', () => {
+        controller.enqueue('data: [DONE]\n\n'); // SSE format
+        controller.close(); 
+      });
+    }
   });
-  const content = response.data.choices[0].message?.content || "";
-  console.log(content);
-  const answer: Req.ChatCompletionRequestMessage = {
-    content,
-    role: "assistant"
-  };
 
-  return json([answer]);
-
+  return new Response(readableStream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache'
+    }
+  });
 }
