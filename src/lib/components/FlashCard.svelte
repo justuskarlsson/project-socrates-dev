@@ -31,6 +31,16 @@
   >
   <div class="card-body text-3xl text-center centered select-none"
   >
-    {flipped ? data.back : data.front}
+    {#if flipped}
+      {data.back}
+      {#if data.back_extra}
+        <br/>
+        <div class="font-extralight">
+          {data.back_extra}      
+        </div>
+      {/if}
+    {:else}
+       {data.front}
+    {/if}
   </div>
 </div>

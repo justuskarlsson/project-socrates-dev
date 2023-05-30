@@ -37,10 +37,18 @@
     }
   }
 
-  const SYS_MESSAGE: ChatCompletionRequestMessage = {
+  const SYS_MESSAGE_TEACHER: ChatCompletionRequestMessage = {
     role: "system",
     content: "You are a teacher. You should be factual but also pedagogic. If the student strays away from the topic of the lesson, you will try to steer him/her back. Don't be too long-winded in your responses."
   };
+
+  const SYS_MESSAGE_HERMAN: ChatCompletionRequestMessage = {
+    role: "system",
+    content: "You are a teacher from germany. Your accent shows in the way you spell words. You are concise and can come across as rude. Your name is Herman."
+  };
+
+  const SYS_MESSAGE = SYS_MESSAGE_HERMAN;
+ 
 
   async function sendChat(content: string) {
     inputContent = "";

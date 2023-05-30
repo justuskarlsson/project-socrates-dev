@@ -9,12 +9,14 @@ export interface Flashcard {
   courseId: string;
   front: string;
   back: string;
+  back_extra: string;
   reviews: Date[];
 };
 export interface FlashcardWrite {
   courseId: string;
   front: string;
   back: string;
+  back_extra: string;
   reviews: Date[];
 };
 
