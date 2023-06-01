@@ -8,6 +8,13 @@
     selectedCourse.set($courses[selected]);
     window.history.pushState(null, '', `./${$courses[selected].name}`);
   };
+  import { page } from '$app/stores'
+
+
+  function getCourseUrl(){
+    let course = $page.params.course;
+    return `/courses/${course}`
+  }
 </script>
 
 
@@ -19,5 +26,13 @@
        <option value={i}>{course.name}</option>
      {/each}
    </select>
+  </div>
+  <div>
+    <a href="/" >
+      Home
+    </a>
+    <a href={getCourseUrl()}>
+      {$page.params.course}
+    </a>
   </div>
 </div>
