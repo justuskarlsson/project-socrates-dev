@@ -18,7 +18,6 @@ export async function POST(event) {
     presence_penalty: 0.0,
     stream: true,
   }, { responseType: 'stream' }) as any;
-  console.log(apiResponse)
   const readableStream = new ReadableStream({
     start(controller) {
       // Forward the data from the API to the client

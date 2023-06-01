@@ -14,6 +14,20 @@
     width: 260px;
     display: flex;
     justify-content: center;
+    overflow-y: scroll;
+    max-height: calc(100vh - 80px);
+
+  }
+
+  .main-parent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .main {
+    max-width: 960px;
+    overflow-y: scroll;
+    max-height: calc(100vh - 80px);
   }
 
 </style>
@@ -27,8 +41,10 @@
       <Sidebar />
     </div>
     
-    <div class="flex-grow p-8 bg-yellow-100">
-      <slot></slot>
+    <div class="flex-grow p-8 bg-yellow-100 main-parent">
+      <div class="main">
+        <slot></slot>
+      </div>
     </div>
   </div>
 </div>
