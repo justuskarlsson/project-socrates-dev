@@ -7,42 +7,28 @@
 </script>
 
 <style>
-  .header {
-    height: 80px;
-  }
   .sidebar {
-    width: 260px;
-    display: flex;
-    justify-content: center;
-    overflow-y: scroll;
     max-height: calc(100vh - 80px);
 
   }
 
   .main-parent {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .main {
-    max-width: 960px;
-    overflow-y: scroll;
     max-height: calc(100vh - 80px);
   }
 
 </style>
 
 <div class="h-screen flex flex-col">
-  <div class="header bg-blue-100">
+  <div class="h-20 bg-blue-100">
     <Header />
   </div>
-  <div class="flex-grow flex">
-    <div class="sidebar bg-gray-100">
+  <div class="sidebar flex-grow flex">
+    <div class="w-64 flex justify-center overflow-y-scroll">
       <Sidebar />
     </div>
     
-    <div class="flex-grow p-8 bg-yellow-100 main-parent">
-      <div class="main">
+    <div class="main-parent flex-grow p-8 bg-yellow-100 flex flex-col items-center overflow-y-scroll">
+      <div class="max-w-screen-md">
         <slot></slot>
       </div>
     </div>
