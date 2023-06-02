@@ -49,7 +49,12 @@ export const selectedCourse = writable<Course>(undefined);
 
 
 export async function getCourseFlashcards(course: Course) {
-  return getCourseEntity(course, "flashcards") as Promise<Flashcard[]>;
+  let cards = await getCourseEntity(course, "flashcards");
+  cards = cards!.map((c) => ({
+    ...c,
+    reviews: c.reviews.map((v: any) => v.toDate())
+  }))
+  return cards as Flashcard[];
 }
 
 

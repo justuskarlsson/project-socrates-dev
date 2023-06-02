@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { flashcards, type Flashcard } from '$lib/client/flashcards';
+	import { flashcards, type Flashcard, updateFlashcard } from '$lib/client/flashcards';
+	import { updateArrayItem } from '$lib/client/util';
+	import FlashCard from '$lib/components/FlashCard.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -14,55 +16,58 @@
 		flipped = !flipped;
 	}
 
-	$: {
-    updateCards($flashcards);
-	}
-
   function back(a: any[]) {
     return a[a.length - 1];
   }
 
-  function updateCards(c: any){
+	$: {
+    console.log($flashcards);
     cards = $flashcards.filter((flashcard) => {
-			const len = flashcard.reviews.length;
-			if (len === 0) {
-        flashcard.reviews.push(new Date());
-				return true;
-			}
-			const next_review = flashcard.reviews[len - 1];
+			const next_review = back(flashcard.reviews);
 			return next_review <= new Date();
 		});
     cards = [...cards];
-    console.log(cards.length);
     cards.sort((a, b) => {
-      // either none or both are in redo
-      return a.timestamp.getTime() - b.timestamp.getTime();
+      if (a.prio !== b.prio) {
+        return b.prio - a.prio;
+      }
+      let t1 = back(a.reviews).getTime();
+      let t2 = back(b.reviews).getTime();
+      return t1 - t2;
     })
 		card = cards.length > 0 ? cards[0] : null;
     console.log(card)
-  }
+	}
+
+
+
 
   function keypress(event: KeyboardEvent){
-    console.log(event.key);
     if (card === null) {
       return;
     }
+    let new_card = card as Flashcard;
+    let next_review = new Date();
     switch(event.key) {
       case "ArrowDown":
-        card.reviews[card.reviews.length - 1] = new Date();
+        const DELAY_MS = 1 * 60 * 1000;
+        next_review.setTime(next_review.getTime() + DELAY_MS);
+        card.reviews[card.reviews.length - 1] = next_review;
         flipped = false;
-        updateCards($flashcards);
+        new_card.reviews[new_card.reviews.length - 1] = next_review;
+        new_card.prio = 1;
+        flashcards.set(updateArrayItem($flashcards, new_card));
+        // setTimeout(() => {
+        //   flashcards.update((val) => val);
+        // }, DELAY_MS);
+        updateFlashcard(new_card);
         break;
       case "ArrowUp":
-        let next_review = new Date();
-        next_review.setDate(next_review.getDate() + 30);
-        let new_card = card as Flashcard;
+        next_review.setDate(next_review.getDate() + 1);
         new_card.reviews.push(next_review);
-        flashcards.set([
-          ...$flashcards.filter(f => f.id !== new_card.id),
-          new_card
-        ]);
-        updateCards($flashcards);
+        new_card.prio = 0;
+        flashcards.set(updateArrayItem($flashcards, new_card));
+        updateFlashcard(new_card);
         break;
       case "ArrowLeft":
         flipped = false;

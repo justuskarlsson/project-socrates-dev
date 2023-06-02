@@ -10,6 +10,7 @@
     window.history.pushState(null, '', `./${$courses[selected].name}`);
   };
   import { page } from '$app/stores'
+	import { patchFlashcards } from '$lib/client/flashcards';
 
 
   function getCourseUrl(){
@@ -36,5 +37,6 @@
       {$page.params.course}
     </a>
     <FlashCardReview />
+    <!-- <button class="btn" on:click={patchFlashcards}> Patch Flashcards</button> -->
   </div>
 </div>

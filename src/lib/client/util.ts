@@ -11,3 +11,11 @@ export function createLoadingPromise(loader: () => Promise<any>) {
 
   return loadingPromise;
 }
+
+
+export function updateArrayItem(values: any[], item: any) {
+  return [
+    ...values.filter(f => f.id !== item.id),
+    item
+  ];
+}
