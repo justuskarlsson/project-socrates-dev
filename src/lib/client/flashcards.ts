@@ -24,7 +24,7 @@ export const flashcards = writable<Flashcard[]>([]);
 
 export async function addFlashcard(obj: FlashcardWrite) : 
 Promise<Flashcard> {
-  obj.reviews = [];
+  obj.reviews = [new Date()];
   let ref = await addWithTimestamp("flashcards", obj)
   return {
     id: ref.id,

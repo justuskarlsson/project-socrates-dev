@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FlashCardReview from './FlashCardReview.svelte';
   import { courses, selectedCourse } from "$lib/client/courses";
   
   let selected: number = 0;
@@ -34,5 +35,6 @@
     <a href={getCourseUrl()}>
       {$page.params.course}
     </a>
+    <FlashCardReview />
   </div>
 </div>

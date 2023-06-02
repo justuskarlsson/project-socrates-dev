@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let label: string;
+  export let label: string = "Modal";
   export let modalId: string = "my-modal";
 </script>
 
@@ -9,9 +9,10 @@
 
 
 <slot name="entry">
-  <label for={modalId} class="btn">{label}</label>
+  <label for={modalId}>
+    {label}
+  </label>
 </slot>
-
 <input type="checkbox" id={modalId} class="modal-toggle" />
 <label for={modalId} class="modal cursor-pointer">
   <div class="modal-box">
