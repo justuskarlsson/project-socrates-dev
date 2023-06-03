@@ -6,10 +6,12 @@
 
   export let content: string;
   let ref: HTMLElement;
-  onMount(()=>{
+  $: {
     console.log("Markdown Ref:", ref);
-    ref.innerHTML = marked.parse(content);
-  })
+    if (ref) {
+      ref.innerHTML = marked.parse(content);
+    }
+  }
 
 </script>
 

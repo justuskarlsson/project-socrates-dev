@@ -41,7 +41,7 @@
 
   const SYS_MESSAGE_TEACHER: ChatCompletionRequestMessage = {
     role: "system",
-    content: "You are a teacher. You should be factual but also pedagogic. If the student strays away from the topic of the lesson, you will try to steer him/her back. Don't be too long-winded in your responses."
+    content: "You are a teacher. You should be factual but also pedagogic. If the student strays away from the topic of the lesson, you will try to steer him/her back. Don't be too long-winded in your responses. Format your answers in Markdown to better convey your meaning."
   };
 
   const SYS_MESSAGE_HERMAN: ChatCompletionRequestMessage = {
