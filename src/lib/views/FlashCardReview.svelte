@@ -4,6 +4,8 @@
 	import FlashCard from '$lib/components/FlashCard.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import { onDestroy, onMount } from 'svelte';
+  import { fade, slide } from 'svelte/transition';
+  import { elasticInOut } from "svelte/easing";
 
 	const modalId = 'review-flashcards';
 	let cards: Flashcard[];
@@ -84,6 +86,18 @@
   onDestroy(() => {
     window.removeEventListener('keydown', keypress);
   });
+
+  const flipHorizontal = (node: any) => {
+    console.log("Node:", node)
+    return {
+      duration: 5000,
+      easing: elasticInOut,
+      css: (t: any, u: any) => `
+        transform: perspective(60px) rotateY(${(t) * 180}deg);
+        opacity: ${t};
+      `
+    };
+  };
 </script>
 
 <label class="btn" for={modalId}>
@@ -100,6 +114,8 @@
 				<div class="text-3xl text-center centered select-none"
         >
 					{#if flipped}
+            <span in:flipHorizontal class="bg-green-600">
+
 						{card.back}
 						{#if card.back_extra}
 							<br />
@@ -107,8 +123,12 @@
 								{card.back_extra}
 							</div>
 						{/if}
+            </span>
+
 					{:else}
+          <span>
 						{card.front}
+          </span>
 					{/if}
 				</div>
 			{:else}

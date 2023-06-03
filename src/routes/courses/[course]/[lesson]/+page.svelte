@@ -12,7 +12,9 @@
 
   import { page } from "$app/stores"
 	import type { ChatCompletionRequestMessage } from '$lib/request_types';
-	import { onMount } from 'svelte';
+	import { afterUpdate, getContext, onMount } from 'svelte';
+	import { writable } from 'svelte/store';
+	import Markdown from '$lib/components/Markdown.svelte';
   
 
   let inputContent = "";
@@ -47,7 +49,7 @@
     content: "You are a teacher from germany. Your accent shows in the way you spell words. You are concise and can come across as rude. Your name is Herman."
   };
 
-  const SYS_MESSAGE = SYS_MESSAGE_HERMAN;
+  const SYS_MESSAGE = SYS_MESSAGE_TEACHER;
  
 
   async function sendChat(content: string) {
@@ -120,15 +122,32 @@
   }
 
   function formatContent(content: string) {
+    while(content.includes("```")) {
+      content = content.replace("```", "<code>");
+      content = content.replace("```", "</code>");
+    }
     content = content.replaceAll("\n", "<br>");
-    content = content.replace("```", "<code>");
-    content = content.replace("```", "</code>");
     return content;
   }
-  
-</script>
 
-  <div class=" flex flex-col h-full">
+
+
+  let scrollContainer: HTMLElement;
+
+
+  afterUpdate(()=>{
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  })
+</script>
+<div bind:this={scrollContainer} 
+         class="main-parent max-w-screen-md 
+         flex-grow p-8 bg-yellow-100 flex flex-col
+         items-center overflow-y-scroll"
+>
+
+  <div class="flex flex-col h-full">
     {#if $selectedLesson}
     <div>
       {$selectedLesson?.description ||''}
@@ -143,10 +162,20 @@
         </div>
       </div>
       <div class="chat-bubble {role === "user" ? "chat-bubble-success" : "chat-bubble-info"}">
-        {@html formatContent(content)}
+        <Markdown content={content} />
       </div>
     </div>
     {/each}
     <textarea class="textarea textarea-info textarea-md text-base mt-auto" 
               placeholder="Send a message..." on:keydown={maybeSendMessage} bind:value={inputContent} />
   </div>
+</div>
+
+
+<style>
+
+  .main-parent {
+    max-height: calc(100vh - 80px);
+  }
+
+</style>

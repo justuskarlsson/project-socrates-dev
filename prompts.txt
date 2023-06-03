@@ -1,0 +1,10 @@
+
+Could you make a course in JSON format on "Intermediate Svelte, CSS and TailwindCSS". The students are experienced in the subject but want to explore it further.
+The format should be:
+{
+  name: string,
+  lessons: {name: string, description: string} []
+}
+
+
+I am a student on the course "". Today you hold a lesson for me on ""

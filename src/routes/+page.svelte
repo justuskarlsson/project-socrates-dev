@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { courses } from "$lib/client/courses"
+	import DataInput from '$lib/components/DataInput.svelte';
+  import { addCourse, courses, type CourseWrite } from "$lib/client/courses"
   import {addGermanCourse} from '$lib/client/import'
-
+  
+  function onAddCourse(data: CourseWrite) {
+    addCourse(data);
+  }
 </script>
-
 
 <div class="container">
 
@@ -17,6 +20,9 @@
         </a>
       </li>
     {/each}
+    <li>
+      <DataInput label="Add course" onData={onAddCourse} />
+    </li>
   </ul>
 
 

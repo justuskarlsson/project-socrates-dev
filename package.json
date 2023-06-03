@@ -31,6 +31,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"firebase": "^9.22.0"
+		"@types/marked": "^5.0.0",
+		"firebase": "^9.22.0",
+		"marked": "^5.0.4"
 	}
 }

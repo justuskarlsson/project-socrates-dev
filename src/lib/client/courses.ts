@@ -1,8 +1,8 @@
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
-import { db, getWithTimestamp } from './firebase'
+import { addWithTimestamp, db, getWithTimestamp } from './firebase'
 import { writable } from 'svelte/store'
 import { collection, getDocs, query, where  } from "firebase/firestore";
-import { type Lesson, lessons } from './lessons';
+import { type Lesson, lessons, type LessonWrite } from './lessons';
 import type { Flashcard } from './flashcards';
 import { createLoadingPromise } from './util';
 
@@ -19,6 +19,7 @@ export interface Course {
 
 export interface CourseWrite {
   name: string;
+  lessons: LessonWrite[];
 };
 
 
@@ -102,3 +103,27 @@ export async function selectCourseFromURL(
     await updateLessons(course);
   }
 }
+
+
+export async function addCourse(course: CourseWrite){
+  let courseRef = await addWithTimestamp('courses', {
+    name: course.name
+  });
+  console.log(`New course created with ID: ${courseRef.id}`);
+  // Define the lessons
+
+  
+  // Add the lessons to the course
+  for (const lesson of course.lessons) {
+    try {
+      await addWithTimestamp('lessons', {
+        ...lesson,
+        courseId: courseRef.id,
+      });
+      console.log(`Added lesson: ${lesson.name}`);
+    } catch (e) {
+      console.error('Error adding lesson: ', e);
+    }
+  }
+}
+

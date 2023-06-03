@@ -7,5 +7,5 @@ const configuration = new Configuration({
 export const openai = new OpenAIApi(configuration);
 
 // const model = "text-davinci-003"
-export const model = "gpt-3.5-turbo"
-// export const model = "gpt-4"
+// export const model = "gpt-3.5-turbo"
+export const model = "gpt-4"

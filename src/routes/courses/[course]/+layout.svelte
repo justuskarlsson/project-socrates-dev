@@ -1,8 +1,9 @@
 
-<script>
+<script lang="ts">
 
   import Sidebar from '$lib/views/Sidebar.svelte';
 	import Header from '$lib/views/Header.svelte';
+	import { onMount, setContext } from 'svelte';
 
 </script>
 
@@ -12,9 +13,6 @@
 
   }
 
-  .main-parent {
-    max-height: calc(100vh - 80px);
-  }
 
 </style>
 
@@ -26,11 +24,9 @@
     <div class="w-64 flex justify-center overflow-y-scroll">
       <Sidebar />
     </div>
-    
-    <div class="main-parent flex-grow p-8 bg-yellow-100 flex flex-col items-center overflow-y-scroll">
-      <div class="max-w-screen-md">
-        <slot></slot>
-      </div>
+    <div>
+
+      <slot></slot>
     </div>
   </div>
 </div>
