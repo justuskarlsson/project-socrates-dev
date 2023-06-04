@@ -30,7 +30,7 @@
 
 .markdown code {
   color: #ba2121;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 4px;
   line-height: 1;
   overflow-wrap: break-word;

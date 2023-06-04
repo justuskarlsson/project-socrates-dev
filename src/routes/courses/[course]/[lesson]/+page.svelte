@@ -12,7 +12,7 @@
 
   import { page } from "$app/stores"
 	import type { ChatCompletionRequestMessage } from '$lib/request_types';
-	import { afterUpdate, getContext, onMount } from 'svelte';
+	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import Markdown from '$lib/components/Markdown.svelte';
   
@@ -30,9 +30,7 @@
     const idx = parseInt($page.params.lesson, 10);
     if (idx < $lessons.length) {
       const lesson = $lessons[idx];
-      console.log("Selected lesson: ", lesson);
       selectedLesson.set(lesson);
-      console.log("Fetch messages:")
       getLessonMessages(lesson).then((val) => {
         messages.set(val);
       })
@@ -125,11 +123,23 @@
   let scrollContainer: HTMLElement;
 
 
-  afterUpdate(()=>{
+  let mutationObserver: MutationObserver;
+
+  onMount(() => {
+      setTimeout(scrollToBottom, 700);
+  });
+
+
+  function scrollToBottom() {
     if (scrollContainer) {
       scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
-  })
+  }
+  $ : {
+    if ($messages.length > 0) {
+      scrollToBottom();
+    }
+  }
 </script>
 <div bind:this={scrollContainer} 
          class="main-parent 

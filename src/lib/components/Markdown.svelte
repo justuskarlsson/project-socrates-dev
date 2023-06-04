@@ -7,9 +7,8 @@
   export let content: string;
   let ref: HTMLElement;
   $: {
-    console.log("Markdown Ref:", ref);
     if (ref) {
-      ref.innerHTML = marked.parse(content);
+      ref.innerHTML = marked.parse(content, {mangle: false, headerIds: false});
     }
   }
 

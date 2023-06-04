@@ -23,7 +23,6 @@
   }
 
 	$: {
-    console.log($flashcards);
     cards = $flashcards.filter((flashcard) => {
 			const next_review = back(flashcard.reviews);
 			return next_review <= new Date();
@@ -38,7 +37,6 @@
       return t1 - t2;
     })
 		card = cards.length > 0 ? cards[0] : null;
-    console.log(card)
 	}
 
 
