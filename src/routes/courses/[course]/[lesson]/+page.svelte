@@ -121,16 +121,6 @@
     }
   }
 
-  function formatContent(content: string) {
-    while(content.includes("```")) {
-      content = content.replace("```", "<code>");
-      content = content.replace("```", "</code>");
-    }
-    content = content.replaceAll("\n", "<br>");
-    return content;
-  }
-
-
 
   let scrollContainer: HTMLElement;
 
@@ -142,12 +132,11 @@
   })
 </script>
 <div bind:this={scrollContainer} 
-         class="main-parent max-w-screen-md 
+         class="main-parent 
          flex-grow p-8 bg-yellow-100 flex flex-col
          items-center overflow-y-scroll"
 >
-
-  <div class="flex flex-col h-full">
+  <div class="max-w-screen-md flex flex-col h-full mx-auto">
     {#if $selectedLesson}
     <div>
       {$selectedLesson?.description ||''}
@@ -176,6 +165,7 @@
 
   .main-parent {
     max-height: calc(100vh - 80px);
+    width:100%;
   }
 
 </style>

@@ -26,14 +26,11 @@
   <div class="h-20 bg-blue-100">
     <Header />
   </div>
-  <div class="sidebar flex-grow flex">
-    <div class="w-64 flex justify-center overflow-y-scroll">
+  <div class="sidebar flex-grow flex items-center">
+    <div class="w-64 flex justify-center h-[100%] overflow-y-scroll">
       <Sidebar />
     </div>
-    <div>
-
-      <slot></slot>
-    </div>
+    <slot></slot>
   </div>
 </div>
 {/await}
