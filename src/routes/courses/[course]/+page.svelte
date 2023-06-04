@@ -25,11 +25,13 @@
 	}
 </script>
 
-<DataInput onData={addFlashcards} label="Add flashcards" />
-<div class="container flex flex-wrap">
-	{#each $flashcards as flashcard}
-		<FlashCard data={flashcard} />
-	{/each}
+<div class="h-[100%]">
+	<DataInput onData={addFlashcards} label="Add flashcards" />
+	<div class="container flex flex-wrap">
+		{#each $flashcards as flashcard}
+			<FlashCard data={flashcard} />
+		{/each}
+	</div>
 </div>
 
 <style>
