@@ -4,6 +4,7 @@
   import Sidebar from '$lib/views/Sidebar.svelte';
 	import Header from '$lib/views/Header.svelte';
 	import { onMount, setContext } from 'svelte';
+	import { coursesLoading } from '$lib/client/courses';
 
 </script>
 
@@ -16,6 +17,11 @@
 
 </style>
 
+{#await coursesLoading()}
+<div class="container">
+  <h1 class="text-3xl">Loading</h1>
+</div>
+{:then}
 <div class="h-screen flex flex-col">
   <div class="h-20 bg-blue-100">
     <Header />
@@ -30,3 +36,4 @@
     </div>
   </div>
 </div>
+{/await}
