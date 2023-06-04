@@ -61,6 +61,7 @@
         //   flashcards.update((val) => val);
         // }, DELAY_MS);
         updateFlashcard(new_card);
+        flipped = false;
         break;
       case "ArrowUp":
         next_review.setDate(next_review.getDate() + 1);
@@ -68,6 +69,7 @@
         new_card.prio = 0;
         flashcards.set(updateArrayItem($flashcards, new_card));
         updateFlashcard(new_card);
+        flipped = false;
         break;
       case "ArrowLeft":
         flipped = false;
@@ -88,8 +90,8 @@
   const flipHorizontal = (node: any) => {
     console.log("Node:", node)
     return {
-      duration: 5000,
-      easing: elasticInOut,
+      duration: 1000,
+      // easing: elasticInOut,
       css: (t: any, u: any) => `
         transform: perspective(60px) rotateY(${(t) * 180}deg);
         opacity: ${t};
@@ -104,22 +106,32 @@
 
 <input type="checkbox" id={modalId} class="modal-toggle" />
 <label for={modalId} class="modal cursor-pointer">
-	<label class="card modal-box" for=""
+	<label class="card modal-box p-0" for=""
       on:click={flip}
-      class:bg-green-400={flipped}
   >
 			{#if card}
-				<div class="text-3xl text-center centered select-none"
+      <div in:flipHorizontal class="flex justify-center items-center w-[100%] h-[100%] flex-wrap">
+        <span class="w-[100%] h-[10%] bg-green-700"></span>
+        <span class="w-[10%] h-[80%] text-3xl 
+          flex flex-col  justify-center items-center"
+        class:bg-slate-200={flipped}
+        >
+         <span>
+           {flipped ? "←" : ""}
+         </span>
+
+        </span>
+				<span class="w-[80%] h-[80%] text-3xl text-center centered select-none flex flex-col justify-center"
         >
 					{#if flipped}
-            <span in:flipHorizontal class="bg-green-600">
+            <span >
 
 						{card.back}
 						{#if card.back_extra}
 							<br />
-							<div class="font-extralight">
+							<span class="font-extralight">
 								{card.back_extra}
-							</div>
+							</span>
 						{/if}
             </span>
 
@@ -128,7 +140,20 @@
 						{card.front}
           </span>
 					{/if}
-				</div>
+        </span>
+        <span class="w-[10%] h-[80%] text-3xl
+          flex flex-col  justify-center items-center"
+            class:bg-slate-200={!flipped}
+
+        >
+          <span>
+
+            {!flipped ? "→" : ""}
+          </span>
+        </span>
+        <span class="w-[100%] h-[10%] bg-red-600"></span>
+
+			</div>
 			{:else}
 				All Done!
 			{/if}
