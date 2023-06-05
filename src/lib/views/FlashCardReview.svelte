@@ -152,8 +152,8 @@
         
         {#key flipped}
         <span
-          in:fly="{{x:flipped ? 200 : -200, duration: 150, delay:150}}"
-          out:fly="{{x:flipped ? -200 : 200, duration:150 }}"
+          in:fly="{{x:flipped ? 200 : -200, y:0, duration:300, delay:300}}"
+          out:fly="{{x:flipped ? -200 : 200, y:20, duration:300 }}"
         >
 
           <Markdown content={flipped ? card_back() : card.front} />
