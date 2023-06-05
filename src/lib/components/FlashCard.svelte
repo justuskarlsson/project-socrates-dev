@@ -26,8 +26,8 @@
   {#key flipped}
      <!-- content here -->
     <div class="card-body text-3xl text-center centered select-none"
-        in:slide="{{axis: "y", duration: 500}}"
-        out:fade="{{duration:500 }}"
+        in:fly="{{x:flipped ? 200 : -200, duration: 500}}"
+        out:fly="{{x:flipped ? -200 : 200, duration:500 }}"
     >
       <Markdown content={flipped ? back() : data.front} />
     </div>
