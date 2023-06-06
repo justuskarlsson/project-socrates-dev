@@ -19,8 +19,8 @@ back: "original sentence, word highlighted\n\n phonetic pronounciation for engli
 Here is an example:
 [
 {
-  front: "can you **me** to please help\n\n*Can you please help me?*",
-  back: "Können Sie **mir** bitte helfen?\n\n*KERN-en zee meer BIT-tuh HELF-en*"
+  "front": "can you **me** to please help\n\n*Can you please help me?*",
+  "back": "Können Sie **mir** bitte helfen?\n\n*KERN-en zee meer BIT-tuh HELF-en*"
 },
 ...
 ]

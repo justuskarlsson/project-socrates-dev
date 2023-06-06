@@ -25,7 +25,7 @@
   >
   {#key flipped}
      <!-- content here -->
-    <div class="card-body text-3xl text-center centered select-none"
+    <div class="card-body text-3xl text-center centered"
         in:fly="{{x:flipped ? 200 : -200, duration: 500}}"
         out:fly="{{x:flipped ? -200 : 200, duration:500 }}"
     >
