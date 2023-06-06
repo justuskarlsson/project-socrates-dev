@@ -27,15 +27,14 @@
   list-style: circle;
   padding-left: 20px;
 }
-
+/* 
 .markdown code {
   color: #ba2121;
-  /* background-color: #f0f0f0; */
   border-radius: 4px;
   line-height: 1;
   overflow-wrap: break-word;
   padding: 2px;
-}
+} */
 
 .markdown p {
   margin-bottom: 20px;;
