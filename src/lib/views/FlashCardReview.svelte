@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { flashcards, type Flashcard, updateFlashcard } from '$lib/client/flashcards';
 	import { updateArrayItem } from '$lib/client/util';
-	import FlashCard from '$lib/components/FlashCard.svelte';
-	import Modal from '$lib/components/Modal.svelte';
 	import { onDestroy, onMount } from 'svelte';
   import { fade, fly, slide } from 'svelte/transition';
-  import { elasticInOut, elasticOut, quadOut } from "svelte/easing";
+  import { quadOut } from "svelte/easing";
 	import Markdown from '$lib/components/Markdown.svelte';
 
 	const modalId = 'review-flashcards';
 	let cards: Flashcard[];
 	let card: Flashcard | null = null;
-	let redo: Record<string, boolean> = {};
   let flipped = false;
 
 
@@ -44,6 +41,7 @@
 
   let failed: boolean = false;
   function keypress(event: KeyboardEvent){
+    event.preventDefault();
     if (card === null) {
       return;
     }
@@ -106,6 +104,22 @@
     };
   };
 
+  const flipCard = (node: HTMLElement, args: any = {}) => {
+    return {
+      duration: 400,
+      css: (t: number) => {
+        let x = (1 - t)*400;
+        x *= (flipped ? -1 : 1); 
+        console.log(t, x)
+        return `
+          position: absolute;
+          transform: translate(${x}px, 0px);
+        `;
+      }
+      
+    };
+  };
+
   function card_back() {
     if (card === null) {
       return "";
@@ -152,8 +166,8 @@
         
         {#key flipped}
         <span
-          in:fly="{{x:flipped ? 200 : -200, y:0, duration:300, delay:300}}"
-          out:fly="{{x:flipped ? -200 : 200, y:20, duration:300 }}"
+          in:flipCard
+          out:flipCard
         >
 
           <Markdown content={flipped ? card_back() : card.front} />
