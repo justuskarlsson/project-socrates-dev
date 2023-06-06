@@ -18,12 +18,12 @@
 }
 
 
-.markdown ol {
+.markdown-body ol {
   list-style: decimal;
   padding-left: 20px;
 }
 
-.markdown ul {
+.markdown-body ul {
   list-style: circle;
   padding-left: 20px;
 }
@@ -36,6 +36,6 @@
   padding: 2px;
 } */
 
-.markdown p {
+.markdown-body p {
   margin-bottom: 20px;;
 }

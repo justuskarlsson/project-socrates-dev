@@ -41,7 +41,6 @@
 
   let failed: boolean = false;
   function keypress(event: KeyboardEvent){
-    event.preventDefault();
     if (card === null) {
       return;
     }
@@ -62,6 +61,7 @@
         // }, DELAY_MS);
         updateFlashcard(new_card);
         flipped = false;
+        event.preventDefault();
         break;
       case "ArrowUp":
         failed = false;
@@ -71,12 +71,15 @@
         flashcards.set(updateArrayItem($flashcards, new_card));
         updateFlashcard(new_card);
         flipped = false;
+        event.preventDefault();
         break;
       case "ArrowLeft":
         flipped = false;
+        event.preventDefault();
         break;
       case "ArrowRight":
         flipped = true;
+        event.preventDefault();
         break;
     }
   }
