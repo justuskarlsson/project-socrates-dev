@@ -2,6 +2,7 @@
 
   import { onMount } from "svelte";
   import { marked } from 'marked'
+  import hljs from 'highlight.js'
 
 
   export let content: string;
@@ -9,6 +10,9 @@
   $: {
     if (ref) {
       ref.innerHTML = marked.parse(content, {mangle: false, headerIds: false});
+      ref.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el as HTMLElement);
+      });
     }
   }
 

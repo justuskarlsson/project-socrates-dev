@@ -20,14 +20,6 @@
 
 
 <div class="w-[100%] flex items-center">
-  <div class="w-60 p-3">
-    <select class="w-full select select-bordered "
-    bind:value={selected} on:change={onSelectChange}>
-     {#each $courses as course, i}
-       <option value={i}>{course.name}</option>
-     {/each}
-   </select>
-  </div>
   <div>
     <a href="/" >
       Home

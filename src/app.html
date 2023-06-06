@@ -4,19 +4,10 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 		<!-- and it's easy to individually load additional languages -->
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
-		<script>
-			document.addEventListener('DOMContentLoaded', (event) => {
-  document.querySelectorAll('pre code').forEach((el) => {
-    hljs.highlightElement(el);
-  });
-});
-		</script>
 	</body>
 </html>
