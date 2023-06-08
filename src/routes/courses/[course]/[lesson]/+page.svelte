@@ -125,9 +125,9 @@
 <ScrollToBottom
          class="main-parent 
          flex-grow p-8 bg-yellow-100 flex flex-col
-         items-center overflow-y-scroll h-[90vh] w-[100%]"
+         items-center overflow-y-scroll h-full mx-auto"
 >
-  <div class="max-w-screen-md flex flex-col h-full mx-auto">
+  <div class="max-w-screen-md flex flex-col h-full ">
     {#if $selectedLesson}
     <div>
       {$selectedLesson?.description ||''}
@@ -146,8 +146,9 @@
       </div>
     </div>
     {/each}
-    <textarea class="textarea textarea-info textarea-md text-base mt-auto" 
-              placeholder="Send a message..." on:keydown={maybeSendMessage} bind:value={inputContent} />
+    <textarea class="textarea textarea-info textarea-md text-base mt-auto overflow-hidden" 
+              placeholder="Send a message..." on:keydown={maybeSendMessage}
+              bind:value={inputContent} />
   </div>
 </ScrollToBottom>
 
