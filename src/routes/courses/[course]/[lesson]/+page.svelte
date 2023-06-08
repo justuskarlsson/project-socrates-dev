@@ -15,6 +15,7 @@
 	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import Markdown from '$lib/components/Markdown.svelte';
+	import ScrollToBottom from '$lib/components/ScrollToBottom.svelte';
   
 
   let inputContent = "";
@@ -119,31 +120,12 @@
     }
   }
 
-  let scrollContainer: HTMLElement;
 
-
-  let mutationObserver: MutationObserver;
-
-  onMount(() => {
-      setTimeout(scrollToBottom, 700);
-  });
-
-
-  function scrollToBottom() {
-    if (scrollContainer) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    }
-  }
-  $ : {
-    if ($messages.length > 0) {
-      scrollToBottom();
-    }
-  }
 </script>
-<div bind:this={scrollContainer} 
+<ScrollToBottom
          class="main-parent 
          flex-grow p-8 bg-yellow-100 flex flex-col
-         items-center overflow-y-scroll"
+         items-center overflow-y-scroll h-[90vh] w-[100%]"
 >
   <div class="max-w-screen-md flex flex-col h-full mx-auto">
     {#if $selectedLesson}
@@ -167,14 +149,8 @@
     <textarea class="textarea textarea-info textarea-md text-base mt-auto" 
               placeholder="Send a message..." on:keydown={maybeSendMessage} bind:value={inputContent} />
   </div>
-</div>
-
+</ScrollToBottom>
 
 <style>
-
-  .main-parent {
-    max-height: calc(100vh - 80px);
-    width:100%;
-  }
 
 </style>

@@ -18,16 +18,15 @@
   }
 </script>
 
-
-<div class="w-[100%] flex items-center">
-  <div>
-    <a href="/" >
+<nav class="bg-gray-800 px-2 h-16 flex-x mb-2">
+  <div class="flex-x space-x-4">
+    <a class="x-link" href="/" >
       Home
     </a>
-    <a href={getCourseUrl()}>
+    <a class="x-link" href={getCourseUrl()}>
       {$page.params.course}
     </a>
     <FlashCardReview />
-    <!-- <button class="btn" on:click={patchFlashcards}> Patch Flashcards</button> -->
   </div>
-</div>
+</nav>
+

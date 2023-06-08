@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .x-icon {
+    @apply relative flex items-center justify-center
+    h-12 w-12 mt-2 mb-2 mx-auto shadow-lg bg-gray-800
+    text-green-500 hover:bg-green-600 hover:text-white
+    rounded-3xl hover:rounded-xl
+    p-1
+    transition-all duration-300 ease-linear cursor-pointer;
+  }
+  .x-icon-tooltip {
+    @apply absolute w-auto p-2 m-2 min-w-max left-14
+    rounded-md shadow-md text-white bg-gray-900 
+    text-xs font-bold transition-all duration-100
+    scale-0 origin-left; /* group-hover: scale-100 */
+  }
+
+  .x-link {
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white
+    rounded-md px-3 py-2 text-sm font-medium;
+  }
+  .x-link-active {
+    @apply bg-gray-900 text-white;
+  }
+  .x-grid {
+    @apply grid grid-cols-10;
+  }
+
+  .flex-x {
+    @apply flex flex-row items-center;
+  }
+  .flex-x-center {
+    @apply justify-center;
+  }
+  .flex-y {
+    @apply flex flex-col items-center;
+  }
+
+
+  .test {
+    @apply 
+  }
+
+  
+
+}
+
 /* Add custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;

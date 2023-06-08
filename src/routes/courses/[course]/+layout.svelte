@@ -22,14 +22,12 @@
   <h1 class="text-3xl">Loading</h1>
 </div>
 {:then}
+
+
 <div class="h-screen flex flex-col">
-  <div class="h-20 bg-blue-100">
-    <Header />
-  </div>
+  <Header />
   <div class="sidebar flex-grow flex items-center">
-    <div class="w-64 flex justify-center h-[100%] overflow-y-scroll">
-      <Sidebar />
-    </div>
+    <Sidebar />
     <slot></slot>
   </div>
 </div>

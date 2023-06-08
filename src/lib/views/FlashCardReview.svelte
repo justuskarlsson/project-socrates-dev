@@ -5,7 +5,7 @@
   import { fade, fly, slide } from 'svelte/transition';
   import { quadOut } from "svelte/easing";
 	import Markdown from '$lib/components/Markdown.svelte';
-
+  import GiCardDraw from 'svelte-icons/gi/GiCardDraw.svelte'
 	const modalId = 'review-flashcards';
 	let cards: Flashcard[];
 	let card: Flashcard | null = null;
@@ -135,8 +135,13 @@
   }
 </script>
 
-<label class="btn" for={modalId}>
-	Review ({cards.length})
+<label for={modalId}>
+	<span class="x-icon group bg-gray-700">
+    <GiCardDraw />
+    <span class="x-icon-tooltip group-hover:scale-100">
+      Flashcards
+    </span>
+  </span>
 </label>
 
 <input type="checkbox" id={modalId} class="modal-toggle" />
