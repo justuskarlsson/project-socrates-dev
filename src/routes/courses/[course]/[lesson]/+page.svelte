@@ -16,6 +16,7 @@
 	import { writable } from 'svelte/store';
 	import Markdown from '$lib/components/Markdown.svelte';
 	import ScrollToBottom from '$lib/components/ScrollToBottom.svelte';
+	import ChatInput from '$lib/components/ChatInput.svelte';
   
 
   let inputContent = "";
@@ -113,44 +114,39 @@
   }
   
 
-  async function maybeSendMessage(event: KeyboardEvent){
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      sendChat(inputContent);
-    }
-  }
+
 
 
 </script>
-<ScrollToBottom
+<div
          class="main-parent 
-         flex-grow p-8 bg-yellow-100 flex flex-col
-         items-center overflow-y-scroll h-full mx-auto"
+         flex-grow p-8 bg-parchment flex flex-col
+         items-center h-full mx-auto"
 >
   <div class="max-w-screen-md flex flex-col h-full ">
-    {#if $selectedLesson}
-    <div>
-      {$selectedLesson?.description ||''}
-    </div>
-    {/if}
-    {#each $messages as {role, content}}
-    <div class="chat chat-start">
-      <div class="chat-image avatar">
-        <div class="w-14 rounded-full">
-          <img src="{role === "user" ? "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" : "https://banner2.cleanpng.com/20190613/wvj/kisspng-socrates-classical-athens-ancient-greek-philosophy-socrates-on-emaze-5d02ab1271b305.4589557715604559544657.jpg"}"
-            alt="{role}" />
+    <ScrollToBottom class="h-full overflow-y-auto overflow-x-hidden">
+      {#if $selectedLesson}
+      <div>
+        {$selectedLesson?.description ||''}
+      </div>
+      {/if}
+      {#each $messages as {role, content}}
+      <div class="chat chat-start">
+        <div class="chat-image avatar">
+          <div class="w-14 rounded-full">
+            <img src="{role === "user" ? "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png" : "https://banner2.cleanpng.com/20190613/wvj/kisspng-socrates-classical-athens-ancient-greek-philosophy-socrates-on-emaze-5d02ab1271b305.4589557715604559544657.jpg"}"
+              alt="{role}" />
+          </div>
+        </div>
+        <div class="chat-bubble {role === "user" ? "chat-bubble-success" : "chat-bubble-info"}">
+          <Markdown content={content} />
         </div>
       </div>
-      <div class="chat-bubble {role === "user" ? "chat-bubble-success" : "chat-bubble-info"}">
-        <Markdown content={content} />
-      </div>
-    </div>
-    {/each}
-    <textarea class="textarea textarea-info textarea-md text-base mt-auto overflow-hidden" 
-              placeholder="Send a message..." on:keydown={maybeSendMessage}
-              bind:value={inputContent} />
+      {/each}
+    </ScrollToBottom>
+    <ChatInput onSendMessage={sendChat} />
   </div>
-</ScrollToBottom>
+</div>
 
 <style>
 

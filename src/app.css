@@ -5,12 +5,15 @@
 @layer components {
   .x-icon {
     @apply relative flex items-center justify-center
-    h-12 w-12 mt-2 mb-2 mx-auto shadow-lg bg-gray-800
-    text-green-500 hover:bg-green-600 hover:text-white
-    rounded-3xl hover:rounded-xl
-    p-1
+    h-12 w-12 mt-2 mb-2 mx-auto shadow-lg
+    text-green-500 rounded-3xl p-1
     transition-all duration-300 ease-linear cursor-pointer;
   }
+
+  .x-icon:hover, .x-icon.active {
+    @apply bg-green-600 text-white rounded-xl;
+  }
+
   .x-icon-tooltip {
     @apply absolute w-auto p-2 m-2 min-w-max left-14
     rounded-md shadow-md text-white bg-gray-900 
@@ -51,10 +54,11 @@
 /* Add custom scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #f8f9fa;
+  background-color: inherit;
   border-radius: 4px;
 }
 

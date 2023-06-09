@@ -16,7 +16,7 @@
       
       let height = element.scrollHeight;
       let bottomNew = atBottomPrev && height !== prevHeight;
-      let first = prevHeight <= element.clientHeight && height > prevHeight;
+      let first = time < 1000 && height > prevHeight;
       // console.log("..", element.scrollHeight, height);
       if (bottomNew || first) {
         element.scrollTop = element.scrollHeight;

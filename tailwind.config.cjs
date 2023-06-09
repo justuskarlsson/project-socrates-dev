@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: colors.amber[100]
+        primary: colors.amber[100],
+        parchment: "#fefcaf"
       }
     },
     container: {
