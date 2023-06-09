@@ -14,11 +14,12 @@
     content: string;
   };
 
+
   let lightningPrompts: LightningPrompt[] = [
     {name: "hello", content: "Hello __ my name is Justus."},
     {name: "ask", content: "Could you ask me questions about __?"},
   ]
-
+  const filterLimit = 6;
   let filteredPrompts: LightningPrompt[] = [];
   let promptIdx = 0;
   $ : {
@@ -28,9 +29,9 @@
     curWord = word.toLowerCase();
     filteredPrompts = lightningPrompts.filter((prompt) => {
       return prompt.name.startsWith(curWord);
-    })
-    if (promptIdx >= filteredPrompts.length) {
-      promptIdx = Math.max(0, filteredPrompts.length - 1);
+    }).slice(0, filterLimit);
+    if (promptIdx > filteredPrompts.length) {
+      promptIdx = filteredPrompts.length;
     }
   }
 
@@ -46,6 +47,18 @@
           inputContent.length - curWord.length
         )
         inputContent += filteredPrompts[promptIdx].content;
+      } else {
+        let content = prompt(`Content for '${curWord}':`);
+        inputContent = inputContent.slice(0, 
+          inputContent.length - curWord.length
+        )
+        if (content !== null) {
+          lightningPrompts.push({
+            name: curWord,
+            content: content
+          })
+          inputContent += content;
+        }
       }
       lightningPromptVisible = false;
       promptIdx = 0;
@@ -57,10 +70,10 @@
       inputContent = "";
     }
     else if (event.key === "ArrowUp") {
-      promptIdx = promptIdx === 0 ? filteredPrompts.length - 1 : promptIdx - 1;
+      promptIdx = promptIdx === 0 ? filteredPrompts.length : promptIdx - 1;
     }
     else if (event.key === "ArrowDown") {
-      promptIdx = promptIdx === filteredPrompts.length - 1 ? 0 : promptIdx + 1;
+      promptIdx = promptIdx === filteredPrompts.length ? 0 : promptIdx + 1;
     }
 
   }
@@ -117,7 +130,11 @@
           {prompt.name} : {prompt.content}
          </span>
       {/each}
-      
+      <span class="underline"
+            class:bg-gray-400={promptIdx === filteredPrompts.length}
+      > 
+        New Prompt 
+      </span>
     </span>
   {/if}
 </span>
