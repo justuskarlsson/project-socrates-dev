@@ -9,11 +9,29 @@
 
   let curWord = "";
 
+  interface LightningPrompt {
+    name: string;
+    content: string;
+  };
+
+  let lightningPrompts: LightningPrompt[] = [
+    {name: "hello", content: "Hello __ my name is Justus."},
+    {name: "ask", content: "Could you ask me questions about __?"},
+  ]
+
+  let filteredPrompts: LightningPrompt[] = [];
+  let promptIdx = 0;
   $ : {
     let parts = inputContent.split(" ");
     let num = parts.length;
     let word = parts[num - 1];
     curWord = word.toLowerCase();
+    filteredPrompts = lightningPrompts.filter((prompt) => {
+      return prompt.name.startsWith(curWord);
+    })
+    if (promptIdx >= filteredPrompts.length) {
+      promptIdx = Math.max(0, filteredPrompts.length - 1);
+    }
   }
 
 
@@ -22,10 +40,27 @@
       lightningPromptVisible = !lightningPromptVisible;
       event.preventDefault();
     }
-    else if (event.key === 'Enter' && !event.shiftKey) {
+    else if(event.key === "Enter" && lightningPromptVisible) {
+      if (promptIdx < filteredPrompts.length) {
+        inputContent = inputContent.slice(0, 
+          inputContent.length - curWord.length
+        )
+        inputContent += filteredPrompts[promptIdx].content;
+      }
+      lightningPromptVisible = false;
+      promptIdx = 0;
+      event.preventDefault();
+    }
+    else if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       onSendMessage(inputContent);
       inputContent = "";
+    }
+    else if (event.key === "ArrowUp") {
+      promptIdx = promptIdx === 0 ? filteredPrompts.length - 1 : promptIdx - 1;
+    }
+    else if (event.key === "ArrowDown") {
+      promptIdx = promptIdx === filteredPrompts.length - 1 ? 0 : promptIdx + 1;
     }
 
   }
@@ -57,7 +92,7 @@
 
 
 <span class="relative mt-2">
-  <textarea class="w-full p-2 min-h-[70px] resize-none" 
+  <textarea class="w-full p-2 min-h-[70px] resize-none pr-16" 
             style="max-height: {maxHeight}px;" 
             placeholder="Send a message..." on:keydown={maybeSendMessage}
             bind:value={inputContent} use:resizable />
@@ -74,8 +109,15 @@
     <span 
         transition:fade
         class="absolute -top-80 left-0 right-0 mx-auto
-          w-full h-64 bg-slate-50">
-      {curWord}
+          w-full h-64 bg-slate-50 flex flex-col">
+      
+      <span class="underline"> {curWord} </span>
+      {#each filteredPrompts as prompt, index}
+         <span class:bg-gray-400={index === promptIdx}>
+          {prompt.name} : {prompt.content}
+         </span>
+      {/each}
+      
     </span>
   {/if}
 </span>

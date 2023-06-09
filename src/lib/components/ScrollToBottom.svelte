@@ -5,9 +5,14 @@
   let element: HTMLElement;
   let prevHeight = 0;
   let atBottomPrev = false;
-  function onScroll(){
-    atBottomPrev =  element.scrollTop + element.clientHeight === element.scrollHeight;
-    // console.log("Scroll", atBottomPrev);
+  let scrollMargin = 150;
+  function scrollPos(){
+    return element.scrollTop + element.clientHeight;
+  }
+  function onScroll(event: any){
+    atBottomPrev = scrollPos() + scrollMargin >= element.scrollHeight;
+    // console.log("Scroll", element.offsetHeight, element.clientHeight,
+    //   scrollPos() + scrollMargin, element.scrollHeight);
   }
   const delay = 200;
   let time = 0;
@@ -20,6 +25,7 @@
       // console.log("..", element.scrollHeight, height);
       if (bottomNew || first) {
         element.scrollTop = element.scrollHeight;
+        atBottomPrev = true;
       }
       prevHeight = height;
     }
