@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
   import { loaded, updateFromURL } from "$lib/client/stores"
 
-  $: updateFromURL($page.data);
+  $: updateFromURL($page.params);
 
   // Await all loaded
 

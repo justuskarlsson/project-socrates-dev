@@ -2,42 +2,15 @@
 
 
 <script lang="ts">
-	import { courses, coursesLoading, selectCourseFromURL, selectedCourse } from '$lib/client/courses';
+	import { Lesson, Message } from '$lib/client/stores';
   import type * as Req from '$lib/request_types'
-  import {
-    selectedLesson, lessons, getLessonMessages 
-  } from "$lib/client/lessons";
-
-  import { messages, type Message, addMessage} from '$lib/client/messages'
-
-  import { page } from "$app/stores"
 	import type { ChatCompletionRequestMessage } from '$lib/request_types';
-	import { afterUpdate, getContext, onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
 	import Markdown from '$lib/components/Markdown.svelte';
 	import ScrollToBottom from '$lib/components/ScrollToBottom.svelte';
 	import ChatInput from '$lib/components/ChatInput.svelte';
   
 
   let inputContent = "";
-
-  onMount(async () => {
-    await coursesLoading();
-		await selectCourseFromURL($page.params.course,
-			$selectedCourse, $courses);
-	})
-
-  // Does not remount
-  $: {
-    const idx = parseInt($page.params.lesson, 10);
-    if (idx < $lessons.length) {
-      const lesson = $lessons[idx];
-      selectedLesson.set(lesson);
-      getLessonMessages(lesson).then((val) => {
-        messages.set(val);
-      })
-    }
-  }
 
   const SYS_MESSAGE_TEACHER: ChatCompletionRequestMessage = {
     role: "system",
@@ -51,11 +24,12 @@
 
   const SYS_MESSAGE = SYS_MESSAGE_TEACHER;
  
-
+  Message.cur 
+  
   async function sendChat(content: string) {
     inputContent = "";
-    const old_messages = [...$messages];
-    const lessonId = $selectedLesson.id;
+    const old_messages = [...$Message.cur];
+    const lessonId = $Message.selected;
     let user_message = {
       content,
       role: "user",
