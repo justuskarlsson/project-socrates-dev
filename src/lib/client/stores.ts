@@ -38,13 +38,13 @@ export class Lesson extends DataItem {
 
 
 export class Prompt extends DataItem {
+  name: string;
+  content: string;
   static collection = new Collection<Prompt>("prompts", (data: any)=> new Prompt(data));
   constructor(data: Partial<Prompt>) {
     super();
     Object.assign(this, data);
   }
-  name: string;
-  content: string;
 };
 
 export class Flashcard extends DataItem {

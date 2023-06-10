@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
   import FaSearchengin from 'svelte-icons/fa/FaSearchengin.svelte'
+	import { allPrompts, push, Prompt } from '$lib/client/stores';
   export let onSendMessage: Function;
   export let maxHeight: number = 210;
 
@@ -9,27 +10,20 @@
 
   let curWord = "";
 
-  interface LightningPrompt {
-    name: string;
-    content: string;
-  };
 
-
-  let lightningPrompts: LightningPrompt[] = [
-    {name: "hello", content: "Hello __ my name is Justus."},
-    {name: "ask", content: "Could you ask me questions about __?"},
-  ]
+  let filteredPrompts: Prompt[] = [];
   const filterLimit = 6;
-  let filteredPrompts: LightningPrompt[] = [];
   let promptIdx = 0;
+
   $ : {
     let parts = inputContent.split(" ");
     let num = parts.length;
     let word = parts[num - 1];
     curWord = word.toLowerCase();
-    filteredPrompts = lightningPrompts.filter((prompt) => {
+    filteredPrompts = $allPrompts.filter((prompt) => {
       return prompt.name.startsWith(curWord);
     }).slice(0, filterLimit);
+
     if (promptIdx > filteredPrompts.length) {
       promptIdx = filteredPrompts.length;
     }
@@ -53,10 +47,13 @@
           inputContent.length - curWord.length
         )
         if (content !== null) {
-          lightningPrompts.push({
+          let prompt = new Prompt({
             name: curWord,
             content: content
-          })
+          });
+
+          push(allPrompts, prompt);
+          Prompt.collection.add(prompt);
           inputContent += content;
         }
       }
@@ -123,18 +120,19 @@
     <span 
         transition:fade
         class="absolute -top-64 mb-2 left-0 right-0 mx-auto
-          w-full h-60 bg-slate-50 flex flex-col">
+          w-full h-60 bg-green-200 flex flex-col text-black">
       
       <span class="underline"> {curWord} </span>
       {#each filteredPrompts as prompt, index}
-         <span class:bg-gray-400={index === promptIdx}>
+         <span class="" class:bg-green-500={index === promptIdx}>
           {prompt.name} : {prompt.content}
          </span>
       {/each}
       <span class="underline"
-            class:bg-gray-400={promptIdx === filteredPrompts.length}
+            class:bg-green-500={promptIdx === filteredPrompts.length}
       > 
         New Prompt 
+
       </span>
     </span>
   {/if}
