@@ -177,7 +177,6 @@ export async function updateFromURL({course, lesson} : PageNav){
       curLessons.set(
         get(allLessons).filter((l) => l.courseId === courseObj.id)
       );
-      console.log(get(allFlashcards));
       curFlashcards.set(
         get(allFlashcards).filter((f) => f.courseId === courseObj.id)
       );

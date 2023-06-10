@@ -23,9 +23,12 @@ export const auth = getAuth(app);
 
 export const userStore = writable<User | null>(null);
 export let user: User | null = null;
+export const loadingAuthState = writable(true);
 
 onAuthStateChanged(auth, (firebaseUser)=> {
   user = firebaseUser;
+  loadingAuthState.set(false); 
+
   userStore.set(firebaseUser);
 });
 
