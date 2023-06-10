@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lessons, selectedLesson } from "$lib/client/lessons"
+  import { curLessons, selectedLesson } from "$lib/client/stores"
 
   import { page } from '$app/stores'
 
@@ -14,7 +14,7 @@
 <div class="flex justify-center h-[100%] overflow-y-scroll">
 
   <ul class="menu bg-base-100 w-56">
-    {#each $lessons as lesson, index}
+    {#each $curLessons as lesson, index}
       <li>
         <a class:active={lesson.name === ($selectedLesson?.name || "")}
             href="{getUrl(index)}"

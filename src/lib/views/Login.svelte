@@ -7,13 +7,11 @@
 
   async function login(){
     const res = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Login:", res);
   }
 
 
   async function register(){
     let res = await createUserWithEmailAndPassword(auth, email, password);
-    console.log("Register:", res)
   }
 
 </script>

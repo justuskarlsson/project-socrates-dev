@@ -1,15 +1,7 @@
 <script lang="ts">
 	import FlashCardReview from './FlashCardReview.svelte';
-  import { courses, selectedCourse } from "$lib/client/courses";
   
-  let selected: number = 0;
-
-  const onSelectChange = () => {
-    selectedCourse.set($courses[selected]);
-    window.history.pushState(null, '', `./${$courses[selected].name}`);
-  };
   import { page } from '$app/stores'
-	import { patchFlashcards } from '$lib/client/flashcards';
 
 
   function getCourseUrl(){
@@ -23,10 +15,12 @@
     <a class="x-link" href="/" >
       Home
     </a>
+    {#if $page.params.course}
     <a class="x-link" href={getCourseUrl()}>
       {$page.params.course}
     </a>
     <FlashCardReview />
+    {/if}
   </div>
 </nav>
 

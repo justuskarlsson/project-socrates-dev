@@ -5,17 +5,15 @@
 	import { page } from '$app/stores';
   import { loaded, updateFromURL } from "$lib/client/stores"
 
-  $: updateFromURL($page.params);
+  $: if ($loaded) updateFromURL($page.params);
 
   // Await all loaded
 
 </script>
 
-<div class="flex justify-center h-[100%] overflow-y-scroll">
 
-  {#if $loaded}
-     <slot/>
-  {:else}
-     <span class="text-3xl">Loading</span>
-  {/if}
-</div>
+{#if $loaded}
+    <slot/>
+{:else}
+    <span class="text-3xl left-0 right-0 top-0 bottom-0 m-auto">Loading..</span>
+{/if}

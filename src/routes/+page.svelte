@@ -1,17 +1,20 @@
 <script lang="ts">
 	import DataInput from '$lib/components/DataInput.svelte';
-  import { addCourse, courses, type CourseWrite } from "$lib/client/courses"
-  import {addGermanCourse} from '$lib/client/import'
+	import { Course, Lesson, allCourses } from '$lib/client/stores';
   
-  function onAddCourse(data: CourseWrite) {
-    addCourse(data);
+  async function onAddCourse(data: any) {
+    let { name } = data;
+    let course = await Course.collection.add({name});
+    for (let { name, description } of data.lessons) {
+      Lesson.collection.add({name, description, courseId: course.id})
+    }
   }
 </script>
 
 <div class="container">
 
   <ul class="menu bg-base-100 w-56">
-    {#each $courses as course}
+    {#each $allCourses as course}
       <li>
         <a href="courses/{course.name.replaceAll(' ', '-')}"
            class="bg-green-100"

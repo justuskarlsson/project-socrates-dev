@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { flashcards, type Flashcard, updateFlashcard } from '$lib/client/flashcards';
+	import { allFlashcards, curFlashcards, Flashcard } from '$lib/client/stores';
 	import { updateArrayItem } from '$lib/client/util';
 	import { onDestroy, onMount } from 'svelte';
-  import { fade, fly, slide } from 'svelte/transition';
+  import { fade } from 'svelte/transition';
   import { quadOut } from "svelte/easing";
 	import Markdown from '$lib/components/Markdown.svelte';
   import GiCardDraw from 'svelte-icons/gi/GiCardDraw.svelte'
+
 	const modalId = 'review-flashcards';
 	let cards: Flashcard[];
 	let card: Flashcard | null = null;
@@ -21,7 +22,7 @@
   }
 
 	$: {
-    cards = $flashcards.filter((flashcard) => {
+    cards = $curFlashcards.filter((flashcard) => {
 			const next_review = back(flashcard.reviews);
 			return next_review <= new Date();
 		});
@@ -44,42 +45,33 @@
     if (card === null) {
       return;
     }
-    let new_card = card as Flashcard;
-    let next_review = new Date();
     switch(event.key) {
       case "ArrowDown":
+        event.preventDefault();
         failed = true;
-        const DELAY_MS = 1 * 60 * 1000;
-        next_review.setTime(next_review.getTime() + DELAY_MS);
-        card.reviews[card.reviews.length - 1] = next_review;
         flipped = false;
-        new_card.reviews[new_card.reviews.length - 1] = next_review;
-        new_card.prio = 1;
-        flashcards.set(updateArrayItem($flashcards, new_card));
-        // setTimeout(() => {
-        //   flashcards.update((val) => val);
-        // }, DELAY_MS);
-        updateFlashcard(new_card);
+        card.updateFailed();
+        $curFlashcards = updateArrayItem($curFlashcards, card);
+        $allFlashcards = updateArrayItem($curFlashcards, card);
+        card.updateCollection();
         flipped = false;
-        event.preventDefault();
         break;
-      case "ArrowUp":
-        failed = false;
-        next_review.setDate(next_review.getDate() + 1);
-        new_card.reviews.push(next_review);
-        new_card.prio = 0;
-        flashcards.set(updateArrayItem($flashcards, new_card));
-        updateFlashcard(new_card);
-        flipped = false;
+        case "ArrowUp":
         event.preventDefault();
+        failed = false;
+        card.updateSuccess();
+        $curFlashcards = updateArrayItem($curFlashcards, card);
+        $allFlashcards = updateArrayItem($curFlashcards, card);
+        card.updateCollection();
+        flipped = false;
         break;
       case "ArrowLeft":
-        flipped = false;
         event.preventDefault();
+        flipped = false;
         break;
       case "ArrowRight":
-        flipped = true;
         event.preventDefault();
+        flipped = true;
         break;
     }
   }
@@ -97,7 +89,6 @@
       css: (t: number) => {
         let y = quadOut(1 - t)*400;
         y *= (failed ? 1 : -1); 
-        console.log(t, y)
         return `
           position: absolute;
           transform: translate(0px, ${y}px);
@@ -113,7 +104,6 @@
       css: (t: number) => {
         let x = (1 - t)*400;
         x *= (flipped ? -1 : 1); 
-        console.log(t, x)
         return `
           position: absolute;
           transform: translate(${x}px, 0px);

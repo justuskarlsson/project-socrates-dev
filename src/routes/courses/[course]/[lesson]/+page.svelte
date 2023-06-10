@@ -2,7 +2,12 @@
 
 
 <script lang="ts">
-	import { Lesson, Message } from '$lib/client/stores';
+	import { 
+    Message, push,
+    curMessages, selectedLesson, allMessages
+
+
+   } from '$lib/client/stores';
   import type * as Req from '$lib/request_types'
 	import type { ChatCompletionRequestMessage } from '$lib/request_types';
 	import Markdown from '$lib/components/Markdown.svelte';
@@ -24,27 +29,26 @@
 
   const SYS_MESSAGE = SYS_MESSAGE_TEACHER;
  
-  Message.cur 
-  
+
   async function sendChat(content: string) {
     inputContent = "";
-    const old_messages = [...$Message.cur];
-    const lessonId = $Message.selected;
-    let user_message = {
+    const old_messages = [...$curMessages];
+    if (!$selectedLesson) return console.warn("No selected lesson on message add");
+    const lessonId = $selectedLesson.id;
+
+    let user_message = new Message({
       content,
       role: "user",
       lessonId
-    } as Message;
+    });
 
-    messages.update((val) => ([
-      ...val,
-      user_message
-    ]))
+    push(curMessages, user_message);
+
     
     const body: Req.Chat = { 
       messages: [
         SYS_MESSAGE,
-        ...$messages.map(({content, role}) => ({
+        ...$curMessages.map(({content, role}) => ({
           content,
           role
         }))
@@ -58,11 +62,11 @@
       },
       body: JSON.stringify(body)
     });
-    let answer = {
+    let answer = new Message({
       role: "assistant",
       content: "",
       lessonId
-    } as Message;
+    });
 
     const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader();
     while (true) {
@@ -79,18 +83,15 @@
           answer.content += delta.content;
         }
       }
-      messages.set([...old_messages, user_message, answer]);
+      $curMessages = [...old_messages, user_message, answer];
     }
-    user_message = await addMessage(user_message);
-    answer = await addMessage(answer);
+    user_message = await Message.collection.add(user_message);
+    answer = await Message.collection.add(answer);
   
-    messages.set([...old_messages, user_message, answer]);
+    $curMessages = [...old_messages, user_message, answer];
+    push(allMessages, user_message, answer);
   }
   
-
-
-
-
 </script>
 <div
          class="main-parent 
@@ -104,7 +105,7 @@
         {$selectedLesson?.description ||''}
       </div>
       {/if}
-      {#each $messages as {role, content}}
+      {#each $curMessages as {role, content}}
       <div class="chat chat-start">
         <div class="chat-image avatar">
           <div class="w-14 rounded-full">

@@ -29,29 +29,3 @@ onAuthStateChanged(auth, (firebaseUser)=> {
   userStore.set(firebaseUser);
 });
 
-
-export async function addWithTimestamp(col: string, doc: any){
-  let res = await addDoc(collection(db, col), {
-    ...doc,
-    timestamp: serverTimestamp()
-  });
-  console.log(`Added doc: ${res}`);
-  return res;
-}
-
-export async function getWithTimestamp(snapshot: QuerySnapshot<DocumentData>){
-  const list = snapshot.docs.map(doc => ({
-    id: doc.id, 
-    ...doc.data(),
-    timestamp: doc.data().timestamp.toDate()
-  }));
-
-  list.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-  return list;
-}
-
-
-export class Collection {
-
-};
-

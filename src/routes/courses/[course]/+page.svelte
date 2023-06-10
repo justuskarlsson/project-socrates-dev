@@ -1,26 +1,14 @@
 <script lang="ts">
-	import FlashCard from '$lib/components/FlashCard.svelte';
-	import { selectedCourse, courses, type Course, coursesLoading, selectCourseFromURL } from '$lib/client/courses';
-	import { getCourseFlashcards } from '$lib/client/courses';
-	import { page } from '$app/stores';
+	import FlashCardView from '$lib/components/FlashCardView.svelte';
+	import { Flashcard, allFlashcards, curFlashcards, push, selectedCourse } from '$lib/client/stores';
 	import DataInput from '$lib/components/DataInput.svelte';
-	import { type FlashcardWrite, addFlashcard, flashcards } from '$lib/client/flashcards';
-	import { onMount } from 'svelte';
 
-
-	onMount(async () => {
-		await coursesLoading();
-		await selectCourseFromURL($page.params.course,
-			$selectedCourse, $courses);
-		flashcards.set(await getCourseFlashcards($selectedCourse));
-	})
-
-
-	async function addFlashcards(data: FlashcardWrite[]) {
+	async function addFlashcards(data: any[]) {
 		for (let val of data) {
-			val.courseId = $selectedCourse.id;
-			let card = await addFlashcard(val);
-			flashcards.set([...$flashcards, card]);
+			val.courseId = $selectedCourse!.id;
+			let card = await Flashcard.collection.add(val);
+			push(allFlashcards, card);
+			push(curFlashcards, card);
 		}
 	}
 </script>
@@ -28,8 +16,8 @@
 <div class="h-[100%]">
 	<DataInput onData={addFlashcards} label="Add flashcards" />
 	<div class="container flex flex-wrap">
-		{#each $flashcards as flashcard}
-			<FlashCard data={flashcard} />
+		{#each $curFlashcards as flashcard}
+			<FlashCardView data={flashcard} />
 		{/each}
 	</div>
 </div>

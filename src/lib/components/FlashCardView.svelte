@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Flashcard } from '$lib/client/flashcards';
   import { slide, fly, fade } from 'svelte/transition'
 	import Markdown from './Markdown.svelte';
+	import type { Flashcard } from '$lib/client/stores';
   export let data: Flashcard;
 
   let flipped = false;
