@@ -21,10 +21,12 @@ export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-export const user = writable<User | null>(null);
+export const userStore = writable<User | null>(null);
+export let user: User | null = null;
 
 onAuthStateChanged(auth, (firebaseUser)=> {
-  user.set(firebaseUser);
+  user = firebaseUser;
+  userStore.set(firebaseUser);
 });
 
 

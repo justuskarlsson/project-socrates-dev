@@ -105,7 +105,8 @@
 
 
 <span class="relative mt-2">
-  <textarea class="w-full p-2 min-h-[70px] resize-none pr-16" 
+  <textarea class="w-full p-2 min-h-[70px] resize-none pr-16
+    shadow-xl rounded-xl border-slate-200 border-2" 
             style="max-height: {maxHeight}px;" 
             placeholder="Send a message..." on:keydown={maybeSendMessage}
             bind:value={inputContent} use:resizable />
@@ -121,8 +122,8 @@
   {#if lightningPromptVisible}
     <span 
         transition:fade
-        class="absolute -top-80 left-0 right-0 mx-auto
-          w-full h-64 bg-slate-50 flex flex-col">
+        class="absolute -top-64 mb-2 left-0 right-0 mx-auto
+          w-full h-60 bg-slate-50 flex flex-col">
       
       <span class="underline"> {curWord} </span>
       {#each filteredPrompts as prompt, index}
