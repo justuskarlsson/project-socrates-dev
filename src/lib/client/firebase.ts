@@ -27,8 +27,7 @@ export const loadingAuthState = writable(true);
 
 onAuthStateChanged(auth, (firebaseUser)=> {
   user = firebaseUser;
-  loadingAuthState.set(false); 
-
   userStore.set(firebaseUser);
+  loadingAuthState.set(false); 
 });
 

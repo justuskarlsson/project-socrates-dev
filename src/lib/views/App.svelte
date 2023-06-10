@@ -17,12 +17,12 @@
 
 
    
-{#if !$loaded || $loadingAuthState}
+{#if !$loadingAuthState && !$userStore}
+  <Login />
+{:else if !$loaded}
   <div class="animate-spin w-32 h-32 mx-auto mt-[20%]"> 
     <FaSpinner /> 
   </div>
-{:else if !$userStore}
-  <Login />
 {:else}
   <slot/>
 {/if}
