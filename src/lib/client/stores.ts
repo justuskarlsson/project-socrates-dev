@@ -45,6 +45,14 @@ export class Prompt extends DataItem {
     super();
     Object.assign(this, data);
   }
+
+  contentSlice(maxLength: number = 40){
+    let str = this.content;
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength) + "...";
+    }
+    return str;
+  }
 };
 
 export class Flashcard extends DataItem {

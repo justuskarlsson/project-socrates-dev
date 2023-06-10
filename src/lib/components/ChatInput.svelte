@@ -122,17 +122,17 @@
         class="absolute -top-64 mb-2 left-0 right-0 mx-auto
           w-full h-60 bg-green-200 flex flex-col text-black">
       
-      <span class="underline"> {curWord} </span>
+      <span class="underline p-1 m-1"> {curWord} </span>
       {#each filteredPrompts as prompt, index}
-         <span class="" class:bg-green-500={index === promptIdx}>
-          {prompt.name} : {prompt.content}
+         <span class="p-1 m-1" 
+              class:bg-green-500={index === promptIdx}>
+            <b>{prompt.name}</b>: {prompt.contentSlice(50)}
          </span>
       {/each}
-      <span class="underline"
+      <span class="underline p-1 m-1"
             class:bg-green-500={promptIdx === filteredPrompts.length}
       > 
-        New Prompt 
-
+        <b>New Prompt </b> 
       </span>
     </span>
   {/if}
