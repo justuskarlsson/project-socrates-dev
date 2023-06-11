@@ -25,6 +25,8 @@
 
   onMount(()=> {
       document.addEventListener("selectionchange", onHighlight);
+      scroll.top -= mapRoot.clientHeight / (2 * scale);
+      scroll.left -= mapRoot.clientWidth / (2 * scale);
       mapRoot.scrollTop = scroll.top;
       mapRoot.scrollLeft = scroll.left;
   })
@@ -56,15 +58,12 @@
   }
 
 
+
   function onMouseMove(event: MouseEvent) {
     updateMousePosition(event.clientX, event.clientY)
     if (event.buttons !== 1) return;
     const dx = (event.clientX - start.x);
     const dy = (event.clientY - start.y);
-
-    // console.log("", dx, "", dy);
-    // console.log("Y:", mapRoot.scrollTop, mapRoot.offsetHeight);
-    // console.log("X:", mapRoot.scrollLeft, mapRoot.offsetWidth);
     mapRoot.scrollTop = scroll.top - dy;
     mapRoot.scrollLeft = scroll.left - dx;
   }
@@ -76,7 +75,7 @@
   function zoom(event: WheelEvent) {
       event.preventDefault();
       // velocity -> 1.0 straight to middle
-      const v = 0.9;
+      const v = 0.2;
       let delta = event.deltaY * -0.01;
       let {clientWidth, clientHeight} = mapRoot;
       let prevTl = getTopLeft();
@@ -84,9 +83,12 @@
         x: prevTl.x + clientWidth / (2 * scale),
         y: prevTl.y + clientHeight / (2 * scale)
       }
+      let prevMousePos = mousePos;
       let prevScale = scale;
       scaleLevel += delta;
-      scale = Math.pow(1.25, scaleLevel);
+      let base = scaleLevel < 0 ? 1.12 : 1.25;
+      scale = Math.pow(base, scaleLevel)
+      let scaleChange = scale / prevScale;
       let newCenter = {
         x: v * mousePos.x + (1 - v) * prevCenter.x,
         y: v * mousePos.y + (1 - v) * prevCenter.y,
@@ -96,7 +98,7 @@
         y: newCenter.y - clientHeight / (2 * scale),
       }
       // console.log("\n", scale, getTopLeft(), mousePos);
-      console.log(prevScale, scale)
+      // console.log(prevScale, scale)
       mapWorld.style.transform = `scale(${scale})`;
       scroll.top = newTl.y;
       scroll.left = newTl.x;
