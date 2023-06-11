@@ -1,12 +1,15 @@
 <script lang="ts">
   import ChatInput from "$lib/components/ChatInput.svelte";
+	import { connectFirestoreEmulator } from "firebase/firestore";
   import { onDestroy, onMount } from "svelte";
 
-  let scale = 1;
+  let scaleLevel = 0;
+  let scale = 1.0;
   let mapRoot: HTMLElement;
   let mapWorld: HTMLElement;
   let start = {x: 0, y: 0};
   let scroll = {top: 5000, left: 5000};
+  let mousePos = {x: 0, y: 0};
 
   function sendMessage(content: string){
 
@@ -36,12 +39,25 @@
       const currentTarget = event.currentTarget as HTMLElement;
       scroll = {top: currentTarget.scrollTop,
                left: currentTarget.scrollLeft};
-      console.log("Scroll:", scroll);
       (event.currentTarget as HTMLElement).style.cursor = 'grabbing';
   }
 
+  function getTopLeft(){
+    const { scrollTop, scrollLeft, offsetTop, offsetLeft } = mapRoot;
+    // console.log({ scrollTop, scrollLeft, offsetTop, offsetLeft })
+    return {x: scrollLeft - offsetLeft, y: scrollTop - offsetTop};
+  }
+
+  function updateMousePosition(dx = 0, dy = 0){
+    let tl = getTopLeft();
+    mousePos.x = tl.x + dx / scale;
+    mousePos.y = tl.y + dy / scale;
+    // console.log(tl, mousePos);
+  }
+
+
   function onMouseMove(event: MouseEvent) {
-    
+    updateMousePosition(event.clientX, event.clientY)
     if (event.buttons !== 1) return;
     const dx = (event.clientX - start.x);
     const dy = (event.clientY - start.y);
@@ -59,10 +75,14 @@
   function zoom(event: WheelEvent) {
       event.preventDefault();
       let delta = event.deltaY * -0.01;
-      scale += delta;
-      let scaleVal = Math.pow(1.25, scale);
-      console.log("ZOOOOM:\n", scaleVal, scale, delta);
-      mapWorld.style.transform = `scale(${scaleVal})`;
+      let prevScaleVal = scale;
+      scaleLevel += delta;
+      scale = Math.pow(1.25, scaleLevel);
+      let {clientWidth, clientHeight} = mapRoot;
+      let width = clientWidth / scale;
+      // console.log("\n", scale, getTopLeft(), mousePos);
+      console.log(mapRoot.getBoundingClientRect(), clientWidth)
+      mapWorld.style.transform = `scale(${scale})`;
       mapRoot.scrollTop = scroll.top;
       mapRoot.scrollLeft = scroll.left;
   }
@@ -84,7 +104,7 @@
          bind:this={mapWorld}
     >
 
-      <div class="w-48 h-48 bg-green-200 m-4 absolute" 
+      <div class="w-48 h-48 bg-green-200 absolute" 
         style="left:5000px; top:5000px;">
         <p>Hello World!</p>
       </div>

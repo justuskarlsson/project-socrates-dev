@@ -117,10 +117,29 @@ export class Flashcard extends DataItem {
 
 };
 
+export class MessageGroup extends DataItem {
+  // For mind map mostly
+  id: string = "";
+  parent: string = "";
+  
+  static collection = new Collection<MessageGroup>("message_groups",
+    (data: any) => new MessageGroup(data));
+
+  constructor(data: Partial<MessageGroup>) {
+    super();
+    Object.assign(this, data);
+  }
+
+};
+
+
 export class Message extends DataItem {
-  lessonId: string;
+  lessonId: string = "";
   role: ChatCompletionRequestMessageRoleEnum;
   content: string;
+  // For mind map
+
+  meta?: MessageGroup;
 
   static collection = new Collection<Message>("messages", (data: any) => new Message(data));
 
