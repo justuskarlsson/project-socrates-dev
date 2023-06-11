@@ -42,6 +42,9 @@
     @apply flex flex-col items-center;
   }
 
+  .x-tl {
+    @apply absolute left-0 right-0;
+  }
 
   .test {
     @apply 

@@ -101,7 +101,7 @@
 </script>
 
 
-<span class="relative mt-2">
+<div class="relative mt-2">
   <textarea class="w-full p-2 min-h-[70px] resize-none pr-16
     shadow-xl rounded-xl border-slate-200 border-2" 
             style="max-height: {maxHeight}px;" 
@@ -136,7 +136,7 @@
       </span>
     </span>
   {/if}
-</span>
+</div>
 
 <style>
 </style>

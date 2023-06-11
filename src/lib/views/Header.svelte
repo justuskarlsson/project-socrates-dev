@@ -10,7 +10,7 @@
   }
 </script>
 
-<nav class="bg-gray-800 px-2 h-16 flex-x mb-2">
+<nav class="bg-gray-800 px-2 h-16 flex-x">
   <div class="flex-x space-x-4">
     <a class="x-link" href="/" >
       Home
@@ -18,6 +18,12 @@
     {#if $page.params.course}
     <a class="x-link" href={getCourseUrl()}>
       {$page.params.course}
+    </a>
+    <span class="w-[1px] h-12 bg-gray-500 rounded-xl">
+
+    </span>
+    <a class="x-link" href={getCourseUrl() + "/map"}>
+      Map
     </a>
     <FlashCardReview />
     {/if}

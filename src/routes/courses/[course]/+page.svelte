@@ -2,6 +2,7 @@
 	import FlashCardView from '$lib/components/FlashCardView.svelte';
 	import { Flashcard, allFlashcards, curFlashcards, push, selectedCourse } from '$lib/client/stores';
 	import DataInput from '$lib/components/DataInput.svelte';
+	import Sidebar from '$lib/views/Sidebar.svelte';
 
 	async function addFlashcards(data: any[]) {
 		for (let val of data) {
@@ -13,6 +14,7 @@
 	}
 </script>
 
+<Sidebar />
 <div class="h-[100%]">
 	<DataInput onData={addFlashcards} label="Add flashcards" />
 	<div class="container flex flex-wrap">

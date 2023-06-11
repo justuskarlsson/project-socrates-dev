@@ -131,6 +131,9 @@
     <span class="x-icon-tooltip group-hover:scale-100">
       Flashcards
     </span>
+    <span class="absolute -right-1 -bottom-1 text-sm">
+      {$curFlashcards.length}
+    </span>
   </span>
 </label>
 

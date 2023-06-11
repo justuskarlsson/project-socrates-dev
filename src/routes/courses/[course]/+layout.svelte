@@ -1,14 +1,13 @@
 
 <script lang="ts">
 
-  import Sidebar from '$lib/views/Sidebar.svelte';
 	import Header from '$lib/views/Header.svelte';
 
 </script>
 
 <style>
   .body {
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 64px);
 
   }
 
@@ -17,10 +16,9 @@
 
 
 
-<div class="h-screen flex flex-col">
+<div class="h-screen flex flex-col p-0 m-0">
   <Header />
   <div class="body flex-grow flex items-center">
-    <Sidebar />
     <slot></slot>
   </div>
 </div>

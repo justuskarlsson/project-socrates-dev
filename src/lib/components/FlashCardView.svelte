@@ -18,7 +18,7 @@
 </script>
 
 
-<div class="root card w-96 bg-base-100 h-80 shadow-xl cursor-pointer"
+<div class="root card w-96 bg-base-100 h-80 shadow-xl cursor-pointer overflow-hidden"
      on:click={flip}
      class:bg-green-400={flipped}
 

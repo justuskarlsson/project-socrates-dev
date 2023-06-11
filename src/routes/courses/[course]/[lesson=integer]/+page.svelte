@@ -13,6 +13,7 @@
 	import Markdown from '$lib/components/Markdown.svelte';
 	import ScrollToBottom from '$lib/components/ScrollToBottom.svelte';
 	import ChatInput from '$lib/components/ChatInput.svelte';
+	import Sidebar from '$lib/views/Sidebar.svelte';
   
 
   let inputContent = "";
@@ -93,13 +94,15 @@
   }
   
 </script>
+
+<Sidebar />
 <div
          class="main-parent 
          flex-grow p-8 bg-parchment flex flex-col
          items-center h-full mx-auto"
 >
   <div class="max-w-screen-md flex flex-col h-full ">
-    <ScrollToBottom class="h-full overflow-y-auto overflow-x-hidden">
+    <ScrollToBottom class="h-full overflow-y-scroll overflow-x-hidden">
       {#if $selectedLesson}
       <div>
         {$selectedLesson?.description ||''}
