@@ -4,6 +4,7 @@
 
   let scale = 1;
   let mapRoot: HTMLElement;
+  let mapWorld: HTMLElement;
   let start = {x: 0, y: 0};
   let scroll = {top: 5000, left: 5000};
 
@@ -44,9 +45,9 @@
     if (event.buttons !== 1) return;
     const dx = (event.clientX - start.x);
     const dy = (event.clientY - start.y);
-    console.log("", dx, "", dy);
-    console.log("Y:", mapRoot.scrollTop, mapRoot.offsetHeight);
-    console.log("X:", mapRoot.scrollLeft, mapRoot.offsetWidth);
+    // console.log("", dx, "", dy);
+    // console.log("Y:", mapRoot.scrollTop, mapRoot.offsetHeight);
+    // console.log("X:", mapRoot.scrollLeft, mapRoot.offsetWidth);
     mapRoot.scrollTop = scroll.top - dy;
     mapRoot.scrollLeft = scroll.left - dx;
   }
@@ -57,8 +58,13 @@
 
   function zoom(event: WheelEvent) {
       event.preventDefault();
-      scale += event.deltaY * -0.01;
-      scale = Math.min(Math.max(.125, scale), 4); 
+      let delta = event.deltaY * -0.01;
+      scale += delta;
+      let scaleVal = Math.pow(1.25, scale);
+      console.log("ZOOOOM:\n", scaleVal, scale, delta);
+      mapWorld.style.transform = `scale(${scaleVal})`;
+      mapRoot.scrollTop = scroll.top;
+      mapRoot.scrollLeft = scroll.left;
   }
 </script>
 
@@ -74,7 +80,8 @@
   bind:this={mapRoot}
 
   >
-    <div class="bg-gray-300 w-[10000px] h-[10000px] absolute"
+    <div class="bg-gray-100 w-[10000px] h-[10000px] absolute"
+         bind:this={mapWorld}
     >
 
       <div class="w-48 h-48 bg-green-200 m-4 absolute" 
@@ -88,3 +95,27 @@
     <ChatInput onSendMessage={sendMessage}/>
   </div>
 </div>
+
+
+<style>
+  /* Add custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+
+
+::-webkit-scrollbar-track {
+  background-color: black;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: ghostwhite;
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+}
+
+</style>
