@@ -61,6 +61,7 @@
     if (event.buttons !== 1) return;
     const dx = (event.clientX - start.x);
     const dy = (event.clientY - start.y);
+
     // console.log("", dx, "", dy);
     // console.log("Y:", mapRoot.scrollTop, mapRoot.offsetHeight);
     // console.log("X:", mapRoot.scrollLeft, mapRoot.offsetWidth);
@@ -74,15 +75,31 @@
 
   function zoom(event: WheelEvent) {
       event.preventDefault();
+      // velocity -> 1.0 straight to middle
+      const v = 0.9;
       let delta = event.deltaY * -0.01;
-      let prevScaleVal = scale;
+      let {clientWidth, clientHeight} = mapRoot;
+      let prevTl = getTopLeft();
+      let prevCenter = {
+        x: prevTl.x + clientWidth / (2 * scale),
+        y: prevTl.y + clientHeight / (2 * scale)
+      }
+      let prevScale = scale;
       scaleLevel += delta;
       scale = Math.pow(1.25, scaleLevel);
-      let {clientWidth, clientHeight} = mapRoot;
-      let width = clientWidth / scale;
+      let newCenter = {
+        x: v * mousePos.x + (1 - v) * prevCenter.x,
+        y: v * mousePos.y + (1 - v) * prevCenter.y,
+      };
+      let newTl =  {
+        x: newCenter.x - clientWidth / (2 * scale),
+        y: newCenter.y - clientHeight / (2 * scale),
+      }
       // console.log("\n", scale, getTopLeft(), mousePos);
-      console.log(mapRoot.getBoundingClientRect(), clientWidth)
+      console.log(prevScale, scale)
       mapWorld.style.transform = `scale(${scale})`;
+      scroll.top = newTl.y;
+      scroll.left = newTl.x;
       mapRoot.scrollTop = scroll.top;
       mapRoot.scrollLeft = scroll.left;
   }
