@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { computeTest } from '$lib/client/compute';
 	import ChatInput from '$lib/components/ChatInput.svelte';
 	import ChatMessage from '$lib/components/ChatMessage.svelte';
 	import Markdown from '$lib/components/Markdown.svelte';
@@ -13,13 +14,30 @@
 	let scroll = { top: 5000, left: 5000 };
 	let mousePos = { x: 0, y: 0 };
 
-	function sendMessage(content: string) {}
+	interface Message {
+		content: string;
+		x: number;
+		y: number;
+	};
+	let messages: Message[] = [
+
+	]
+
+	function sendMessage(content: string) {
+		let {x, y} = getScreenCenter();
+		messages.push({content, x, y})
+		messages = messages;
+		console.log({x, y, content})
+	}
 
 	function onHighlight() {
 		let selection = document.getSelection();
 		let selectedText = selection?.toString();
 		if (selectedText?.length) {
 			// console.log(selectedText);
+      // if (selectedText.length > 5) {
+      //   alert(selectedText);
+      // }
 		}
 	}
 
@@ -71,17 +89,26 @@
 		// console.log(tl, mousePos);
 	}
 
+
+	function getScreenCenter() {
+		let { clientWidth, clientHeight } = mapRoot;
+
+		let tl = getTopLeft();
+		return {
+			x: tl.x + clientWidth / (2 * scale),
+			y: tl.y + clientHeight / (2 * scale)
+		};
+	}
+
 	function zoom(event: WheelEvent) {
 		event.preventDefault();
 		// velocity -> 1.0 straight to middle
 		const v = 0.2;
 		let delta = event.deltaY * -0.01;
 		let { clientWidth, clientHeight } = mapRoot;
+
 		let prevTl = getTopLeft();
-		let prevCenter = {
-			x: prevTl.x + clientWidth / (2 * scale),
-			y: prevTl.y + clientHeight / (2 * scale)
-		};
+		let prevCenter = getScreenCenter();
 		let prevMousePos = mousePos;
 		let prevScale = scale;
 		scaleLevel += delta;
@@ -125,15 +152,24 @@
 		<div class="bg-gray-100 w-[10000px] h-[10000px] absolute" 
           bind:this={mapWorld}>
 
+			{#each messages as {x, y, content}}
+				 <!-- content here -->
       <!-- each message group -->
-			<div class="shadow-xl p-4 border-2 absolute cursor-auto" 
-          style="left:5000px; top:5000px;"
-          on:mousedown={None}
-          on:mouseup={None}
-        >
-        <!-- each message in group -->
-				<ChatMessage content={"**Test message** \n\n\n $ x = 2 $\n"}/>
+			<div class="shadow-2xl p-4 border-2 absolute rounded-xl" 
+          style="left:{x}px; top:{y}px;"
+          
+					>
+					<!-- each message in group -->
+					<span
+					class="cursor-auto"
+					on:mousedown={None}
+					on:mouseup={None}
+				>
+					<ChatMessage {content} />
+				</span>
 			</div>
+			{/each}
+
 		</div>
 	</div>
 	<div class="absolute bottom-6 w-full px-6">

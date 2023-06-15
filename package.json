@@ -33,6 +33,7 @@
 	"type": "module",
 	"dependencies": {
 		"@types/marked": "^5.0.0",
+		"@webgpu/types": "^0.1.32",
 		"firebase": "^9.22.0",
 		"firebase-admin": "^11.9.0",
 		"highlight.js": "^11.8.0",
