@@ -132,7 +132,7 @@
       Flashcards
     </span>
     <span class="absolute -right-1 -bottom-1 text-sm">
-      {$curFlashcards.length}
+      {cards.length}
     </span>
   </span>
 </label>
