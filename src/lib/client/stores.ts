@@ -59,7 +59,7 @@ export class Flashcard extends DataItem {
   courseId: string;
   front: string;
   back: string;
-  back_extra: string = "";
+  back_extra?: string = "";
   prio: number = 0;
   reviews: Date[] = [new Date()];
 
@@ -119,8 +119,9 @@ export class Flashcard extends DataItem {
 
 export class MessageGroup extends DataItem {
   // For mind map mostly
-  id: string = "";
   parent: string = "";
+  ref_type?: "course" | "lesson" | "map";
+  data?: any;
   
   static collection = new Collection<MessageGroup>("message_groups",
     (data: any) => new MessageGroup(data));
@@ -139,7 +140,7 @@ export class Message extends DataItem {
   content: string;
   // For mind map
 
-  meta?: MessageGroup;
+  groupId?: string;
 
   static collection = new Collection<Message>("messages", (data: any) => new Message(data));
 
@@ -167,17 +168,38 @@ export const curFlashcards: Writable<Flashcard[]> = writable([]);
 export const allMessages: Writable<Message[]> = writable([]);
 export const curMessages: Writable<Message[]> = writable([]);
 
+export const allMessageGroups: Writable<MessageGroup[]> = writable([]);
+
+
 export async function loadAll(){
   const promises: Promise<any>[] = [
     Course.collection.fetch(allCourses),
     Lesson.collection.fetch(allLessons),
     Message.collection.fetch(allMessages),
+    MessageGroup.collection.fetch(allMessageGroups),
     Prompt.collection.fetch(allPrompts),
     Flashcard.collection.fetch(allFlashcards)
   ];
 
   await Promise.all(promises);
   loaded.set(true);
+}
+
+export async function addMapMessageGroup(x: number, y: number){
+  let courseId = get(selectedCourse)?.id;
+  if (!courseId) {
+    return console.error("Course id not found");
+  }
+  let courseGroup = get(allMessageGroups).find((g) => g.ref_type === "course" && g.data === courseId);
+  if (!courseGroup) {
+    courseGroup = await MessageGroup.collection.add({ref_type: "course", data: courseId});
+  }
+
+  return MessageGroup.collection.add({
+    ref_type: "map",
+    parent: courseGroup.id,
+    data: {x, y}
+  })
 }
 
 interface PageNav {
