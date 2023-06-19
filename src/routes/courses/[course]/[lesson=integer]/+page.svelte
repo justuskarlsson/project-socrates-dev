@@ -15,6 +15,8 @@
 	import ChatInput from '$lib/components/ChatInput.svelte';
 	import Sidebar from '$lib/views/Sidebar.svelte';
 	import ChatMessage from '$lib/components/ChatMessage.svelte';
+	import { MessageStream } from '$lib/client/util';
+	import { user } from '$lib/client/firebase';
   
 
   let inputContent = "";
@@ -57,36 +59,20 @@
       ]
     };
 
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-      'Content-Type': 'text/event-stream'
-      },
-      body: JSON.stringify(body)
-    });
+    const messageStream = MessageStream(body);
+    
     let answer = new Message({
       role: "assistant",
       content: "",
       lessonId
     });
 
-    const reader = response.body!.pipeThrough(new TextDecoderStream()).getReader();
-    while (true) {
-      const {value, done} = await reader.read();
-      if (done) break;
-      const chunks = value.split("data: ");
-      for (let i = 1; i < chunks.length; i++) {
-        if (chunks[i].startsWith("[DONE]")) {
-          break;
-        }
-        const data = JSON.parse(chunks[i]);
-        const delta = data.choices[0].delta;
-        if ("content" in delta) {
-          answer.content += delta.content;
-        }
-      }
+    for await (let part of messageStream){
+      answer.content += part;
       $curMessages = [...old_messages, user_message, answer];
     }
+    delete user_message.groupId;
+    delete answer.groupId;
     user_message = await Message.collection.add(user_message);
     answer = await Message.collection.add(answer);
   
