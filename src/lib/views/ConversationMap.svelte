@@ -6,7 +6,6 @@
 	import ChatMessage from '$lib/components/ChatMessage.svelte';
 	import Markdown from '$lib/components/Markdown.svelte';
 	import type * as Req from '$lib/request_types'
-	import type { ChatCompletionRequestMessage } from 'openai';
 	import { onDestroy, onMount } from 'svelte';
 	import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
 
@@ -21,8 +20,13 @@
 		group: MessageGroup;
 		messages: Message[];
 	}
+
 	let islands: Island[] = [];
 	let curIsland: Island | null = null;
+
+	let chatInput: string = "";
+	let curPrompt : Message = new Message({content: "", role:"user"});
+	let curAnswer : Message = new Message({content: "", role:"assistant"});
 
 	$ : {
 		let groupMessages: Record<string, Message[]> = {};
@@ -56,16 +60,9 @@
 		if (!curIsland) {
 			return console.warn("No active group");
 		}
-
-		let old_messages = [...curIsland.messages];
-    let user_message = new Message({
-      content,
-      role: "user",
-      groupId: curIsland.group.id
-    });
-
-		curIsland.messages.push(user_message);
-		curIsland = curIsland;
+		
+		curPrompt.content = content;
+		curPrompt.groupId = curIsland.group.id;
     
     const body: Req.Chat = { 
       messages: [
@@ -73,27 +70,25 @@
         ...curIsland.messages.map(({content, role}) => ({
           content,
           role
-        }))
+        })), {
+					content: curPrompt.content,
+					role: curPrompt.role,
+				}
       ]
     };
 
     const messageStream = MessageStream(body);
     
-    let answer = new Message({
-      role: "assistant",
-      content: "",
-      groupId: curIsland.group.id
-    });
-		curIsland.messages.push(answer);
+    curAnswer.groupId = curIsland.group.id;
 
     for await (let part of messageStream){
-      answer.content += part;
-      curIsland = curIsland;
+      curAnswer.content += part;
     }
-    user_message = await Message.collection.add(user_message);
-    answer = await Message.collection.add(answer);
-		curIsland.messages = [...old_messages, user_message, answer];
-		$allMessages = [...$allMessages, user_message, answer];
+    curPrompt = await Message.collection.add(curPrompt);
+    curAnswer = await Message.collection.add(curAnswer);
+		$allMessages = [...$allMessages, curPrompt, curAnswer];
+		curPrompt = new Message({content: "", role: "user"})
+		curAnswer = new Message({content: "", role: "assistant"})
 	}
 
 	async function addGroup(){
@@ -240,6 +235,21 @@
 						<ChatMessage {...message}  />
 					</span>
 					{/each}
+					{#if curIsland?.group.id === group.id && chatInput.length}
+					<span class="cursor-auto" on:mousedown={None} on:mouseup={None}>
+						<ChatMessage content={chatInput} role="user"  />
+					</span>
+					{/if}
+					{#if curIsland?.group.id === group.id && curPrompt.content.length}
+					<span class="cursor-auto" on:mousedown={None} on:mouseup={None}>
+						<ChatMessage {...curPrompt}  />
+					</span>
+					{/if}
+					{#if curIsland?.group.id === group.id && curAnswer.content.length}
+					<span class="cursor-auto" on:mousedown={None} on:mouseup={None}>
+						<ChatMessage {...curAnswer}  />
+					</span>
+					{/if}
 				</div>
 			{/each}
 		</div>
@@ -256,7 +266,7 @@
 			</div>
 		</div>
 		<div class="absolute px-6 bottom-6 mx-auto">
-			<ChatInput onSendMessage={sendMessage} />
+			<ChatInput onSendMessage={sendMessage} bind:value={chatInput}/>
 		</div>
 	</div>
 </div>

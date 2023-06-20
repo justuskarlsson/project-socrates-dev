@@ -4,19 +4,18 @@
 	import { allPrompts, push, Prompt } from '$lib/client/stores';
   export let onSendMessage: Function;
   export let maxHeight: number = 210;
+  export let value: string = "";
 
-  let inputContent = "";
   let lightningPromptVisible = false;
 
   let curWord = "";
-
 
   let filteredPrompts: Prompt[] = [];
   const filterLimit = 6;
   let promptIdx = 0;
 
   $ : {
-    let parts = inputContent.split(" ");
+    let parts = value.split(" ");
     let num = parts.length;
     let word = parts[num - 1];
     curWord = word.toLowerCase();
@@ -30,21 +29,21 @@
   }
 
 
-  function maybeSendMessage(event: KeyboardEvent){
+  async function maybeSendMessage(event: KeyboardEvent){
     if (event.altKey && event.key == "s") {
       lightningPromptVisible = !lightningPromptVisible;
       event.preventDefault();
     }
     else if(event.key === "Enter" && lightningPromptVisible) {
       if (promptIdx < filteredPrompts.length) {
-        inputContent = inputContent.slice(0, 
-          inputContent.length - curWord.length
+        value = value.slice(0, 
+          value.length - curWord.length
         )
-        inputContent += filteredPrompts[promptIdx].content;
+        value += filteredPrompts[promptIdx].content;
       } else {
         let content = prompt(`Content for '${curWord}':`);
-        inputContent = inputContent.slice(0, 
-          inputContent.length - curWord.length
+        value = value.slice(0, 
+          value.length - curWord.length
         )
         if (content !== null) {
           let prompt = new Prompt({
@@ -54,7 +53,7 @@
 
           push(allPrompts, prompt);
           Prompt.collection.add(prompt);
-          inputContent += content;
+          value += content;
         }
       }
       lightningPromptVisible = false;
@@ -63,8 +62,8 @@
     }
     else if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      onSendMessage(inputContent);
-      inputContent = "";
+      onSendMessage(value);
+      value = "";
     }
     else if (event.key === "ArrowUp") {
       promptIdx = promptIdx === 0 ? filteredPrompts.length : promptIdx - 1;
@@ -100,13 +99,14 @@
 
 </script>
 
+<svelte:options accessors={true} />
 
 <div class="relative mt-2">
   <textarea class="w-full p-2 min-h-[70px] resize-none pr-16
     shadow-xl rounded-xl border-slate-200 border-2" 
             style="max-height: {maxHeight}px;" 
             placeholder="Send a message..." on:keydown={maybeSendMessage}
-            bind:value={inputContent} use:resizable />
+            bind:value={value} use:resizable />
 
   <span 
         class="x-icon absolute right-4 top-0 p-2
