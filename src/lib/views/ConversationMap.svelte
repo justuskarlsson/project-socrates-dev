@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { Message, MessageGroup, addMapMessageGroup,
 					allMessageGroups, allMessages } from '$lib/client/stores';
+	import { MessageStream, SYS_MESSAGE_TEACHER } from '$lib/client/util';
 	import ChatInput from '$lib/components/ChatInput.svelte';
 	import ChatMessage from '$lib/components/ChatMessage.svelte';
 	import Markdown from '$lib/components/Markdown.svelte';
+	import type * as Req from '$lib/request_types'
+	import type { ChatCompletionRequestMessage } from 'openai';
 	import { onDestroy, onMount } from 'svelte';
 	import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
 
@@ -19,7 +22,7 @@
 		messages: Message[];
 	}
 	let islands: Island[] = [];
-	let curGroup: MessageGroup | null = null;
+	let curIsland: Island | null = null;
 
 	$ : {
 		let groupMessages: Record<string, Message[]> = {};
@@ -28,9 +31,6 @@
 			if (g.ref_type === "map") {
 				groupMessages[g.id] = [];
 				groups[g.id] = g;
-				if (curGroup === null) {
-					curGroup = g;
-				}
 			}
 		})
 
@@ -43,28 +43,64 @@
 			group: groups[id],
 			messages: groupMessages[id]
 		}))
-		console.log(curGroup)
+		if (curIsland === null && islands.length) {
+			curIsland = islands[0];
+		}
+		console.log(curIsland)
 
 	}
 
+	
 
 	async function sendMessage(content: string) {
-		if (!curGroup) {
+		if (!curIsland) {
 			return console.warn("No active group");
 		}
-		let message = await Message.collection.add({
-			content,
-			role: "user",
-			groupId: curGroup.id
-		})
-		$allMessages = [...$allMessages, message];
+
+		let old_messages = [...curIsland.messages];
+    let user_message = new Message({
+      content,
+      role: "user",
+      groupId: curIsland.group.id
+    });
+
+		curIsland.messages.push(user_message);
+		curIsland = curIsland;
+    
+    const body: Req.Chat = { 
+      messages: [
+        SYS_MESSAGE_TEACHER,
+        ...curIsland.messages.map(({content, role}) => ({
+          content,
+          role
+        }))
+      ]
+    };
+
+    const messageStream = MessageStream(body);
+    
+    let answer = new Message({
+      role: "assistant",
+      content: "",
+      groupId: curIsland.group.id
+    });
+		curIsland.messages.push(answer);
+
+    for await (let part of messageStream){
+      answer.content += part;
+      curIsland = curIsland;
+    }
+    user_message = await Message.collection.add(user_message);
+    answer = await Message.collection.add(answer);
+		curIsland.messages = [...old_messages, user_message, answer];
+		$allMessages = [...$allMessages, user_message, answer];
 	}
 
 	async function addGroup(){
 		let { x, y } = getScreenCenter();
 		let group = await addMapMessageGroup(x, y);
 		if (group) {
-			curGroup = group;
+			curIsland = {group, messages: []};
 			$allMessageGroups = [...$allMessageGroups, group]
 		}
 	}
@@ -191,13 +227,17 @@
 			{#each islands as { group, messages }}
 				<!-- content here -->
 				<!-- each message group -->
-				<div class="shadow-2xl p-4 border-2 absolute rounded-xl
-									 w-56 max-h-[960px] min-h-[240px] overflow-y-scroll overflow-x-hidden"
-						style="left:{group.data.x}px; top:{group.data.y}px;"  on:wheel={None}>
+				<div class="shadow-2xl p-4 absolute rounded-xl
+									 w-[420px] max-h-[960px] min-h-[240px] overflow-y-scroll
+									overflow-x-hidden  "
+									class:border-4={curIsland?.group.id === group.id}
+									class:border-sky-300={curIsland?.group.id === group.id}
+									style="left:{group.data.x}px; top:{group.data.y}px;"  
+									on:wheel={None}>
 					<!-- each message in group -->
-					{#each messages as { content }}
+					{#each messages as message}
 					<span class="cursor-auto" on:mousedown={None} on:mouseup={None}>
-						<ChatMessage {content} />
+						<ChatMessage {...message}  />
 					</span>
 					{/each}
 				</div>

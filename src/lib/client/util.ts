@@ -1,6 +1,15 @@
 import type * as Req from '$lib/request_types'
 import { Message } from './stores';
 
+export const SYS_MESSAGE_TEACHER: Req.ChatCompletionRequestMessage = {
+  role: "system",
+  content: "You are a teacher. You should be factual but also pedagogic. If the student strays away from the topic of the lesson, you will try to steer him/her back. Don't be too long-winded in your responses. Format your answers in Markdown to better convey your meaning."
+};
+
+export const SYS_MESSAGE_HERMAN: Req.ChatCompletionRequestMessage = {
+  role: "system",
+  content: "You are a teacher from germany. Your accent shows in the way you spell words. You are concise and can come across as rude. Your name is Herman."
+};
 
 export function createLoadingPromise(loader: () => Promise<any>) {
   const resolver: { resolve?: () => void } = {};
