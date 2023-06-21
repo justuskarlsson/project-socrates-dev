@@ -66,11 +66,11 @@
         flipped = false;
         break;
       case "ArrowLeft":
-        event.preventDefault();
+        // event.preventDefault();
         flipped = false;
         break;
       case "ArrowRight":
-        event.preventDefault();
+        // event.preventDefault();
         flipped = true;
         break;
     }

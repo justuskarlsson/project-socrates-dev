@@ -11,7 +11,7 @@
 </script>
 
 <nav class="bg-gray-800 px-2 h-16 flex-x">
-  <div class="flex-x space-x-4">
+  <div class="flex-x">
     <a class="x-link" href="/" >
       Home
     </a>

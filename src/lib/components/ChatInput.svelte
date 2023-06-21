@@ -6,6 +6,8 @@
   export let maxHeight: number = 210;
   export let value: string = "";
 
+  let textareaValue: string = "";
+
   let lightningPromptVisible = false;
 
   let curWord = "";
@@ -28,8 +30,16 @@
     }
   }
 
+  let sending = false;
+  $: {
+    if (!sending) {
+      value = textareaValue;
+      console.log(value)
+    }
+  }
 
   async function maybeSendMessage(event: KeyboardEvent){
+    console.log(event.key)
     if (event.altKey && event.key == "s") {
       lightningPromptVisible = !lightningPromptVisible;
       event.preventDefault();
@@ -62,8 +72,10 @@
     }
     else if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      onSendMessage(value);
-      value = "";
+      sending = true;
+      textareaValue = "";
+      await onSendMessage(value);
+      sending = false;
     }
     else if (event.key === "ArrowUp") {
       promptIdx = promptIdx === 0 ? filteredPrompts.length : promptIdx - 1;
@@ -106,7 +118,7 @@
     shadow-xl rounded-xl border-slate-200 border-2" 
             style="max-height: {maxHeight}px;" 
             placeholder="Send a message..." on:keydown={maybeSendMessage}
-            bind:value={value} use:resizable />
+            bind:value={textareaValue} use:resizable />
 
   <span 
         class="x-icon absolute right-4 top-0 p-2
