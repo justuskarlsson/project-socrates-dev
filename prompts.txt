@@ -14,7 +14,7 @@ Could you make some flashcards related to the lesson?
 The front and back should be styled with markdown, and the data in JSON. 
 Each card should introduce a word, and be a sentence where that word is used. 
 Here is the format:
-front: "sentance word for word english literal translation with word highlighted\n\n actual translation in english italic"
+front: "sentence word for word english literal translation with word highlighted\n\n actual translation in english italic"
 back: "original sentence, word highlighted\n\n phonetic pronounciation for english speaker"
 Here is an example:
 [

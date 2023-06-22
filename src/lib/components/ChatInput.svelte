@@ -46,10 +46,10 @@
     }
     else if(event.key === "Enter" && lightningPromptVisible) {
       if (promptIdx < filteredPrompts.length) {
-        value = value.slice(0, 
-          value.length - curWord.length
+        textareaValue = textareaValue.slice(0, 
+          textareaValue.length - curWord.length
         )
-        value += filteredPrompts[promptIdx].content;
+        textareaValue += filteredPrompts[promptIdx].content;
       } else {
         let content = prompt(`Content for '${curWord}':`);
         value = value.slice(0, 
@@ -63,7 +63,7 @@
 
           push(allPrompts, prompt);
           Prompt.collection.add(prompt);
-          value += content;
+          textareaValue += content;
         }
       }
       lightningPromptVisible = false;
