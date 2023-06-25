@@ -28,6 +28,7 @@
     "a11y-mouse-events-have-key-events": "ignore",
     "a11y-missing-content": "ignore",
     "a11y-click-events-have-key-events": "ignore"
-  }
+  },
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }
   

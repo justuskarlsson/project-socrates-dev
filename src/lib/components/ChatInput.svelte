@@ -76,6 +76,7 @@
       textareaValue = "";
       await onSendMessage(value);
       sending = false;
+      value = "";
     }
     else if (event.key === "ArrowUp") {
       promptIdx = promptIdx === 0 ? filteredPrompts.length : promptIdx - 1;
