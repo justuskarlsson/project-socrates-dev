@@ -142,14 +142,28 @@ export class Message extends DataItem {
 
   groupId?: string;
 
-  static collection = new Collection<Message>("messages", (data: any) => new Message(data));
+  static collection = new Collection<Message>("messages", 
+    (data: any) => new Message(data));
 
   constructor(data: Partial<Message>) {
     super();
     Object.assign(this, data);
   }
-
 };
+
+export class Embedding extends DataItem {
+  messageId: string;
+  embedding: number[];
+
+  static collection = new Collection<Embedding>("embeddings", 
+    (data: any) => new Embedding(data));
+
+  constructor(data: Partial<Embedding>) {
+    super();
+    Object.assign(this, data);
+  }
+};
+
 
 
 export const loaded = writable(false);
@@ -169,6 +183,7 @@ export const allMessages: Writable<Message[]> = writable([]);
 export const curMessages: Writable<Message[]> = writable([]);
 
 export const allMessageGroups: Writable<MessageGroup[]> = writable([]);
+export const allEmbeddings: Writable<Embedding[]> = writable([]);
 
 
 export async function loadAll(){
@@ -176,6 +191,7 @@ export async function loadAll(){
     Course.collection.fetch(allCourses),
     Lesson.collection.fetch(allLessons),
     Message.collection.fetch(allMessages),
+    Embedding.collection.fetch(allEmbeddings),
     MessageGroup.collection.fetch(allMessageGroups),
     Prompt.collection.fetch(allPrompts),
     Flashcard.collection.fetch(allFlashcards)

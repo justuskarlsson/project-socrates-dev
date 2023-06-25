@@ -32,6 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@tensorflow/tfjs": "^4.8.0",
 		"@types/marked": "^5.0.0",
 		"@webgpu/types": "^0.1.32",
 		"firebase": "^9.22.0",

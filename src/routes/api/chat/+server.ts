@@ -1,11 +1,12 @@
-import { openai, model } from "$lib/server/server"
+import { openai, model as defaultModel } from "$lib/server/server"
 import type * as Req from '$lib/request_types'
+import type { RequestEvent } from "./$types";
 
 
 
-
-export async function POST(event) {
+export async function POST(event: RequestEvent) {
   const body = await event.request.json() as Req.Chat;
+  let model = body.model || defaultModel;
 
   // Make a streaming request to OpenAI
   const apiResponse = await openai.createChatCompletion({
