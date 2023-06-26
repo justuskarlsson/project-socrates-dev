@@ -15,7 +15,7 @@
   function createMap(container: HTMLDivElement) {
     map = L.map(container, {
 			crs: L.CRS.Simple,
-			minZoom: -4
+			minZoom: -7
 		})
     mapContext.value = map;
 		let image = L.imageOverlay(

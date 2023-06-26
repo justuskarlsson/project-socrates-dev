@@ -31,22 +31,27 @@ export async function greedyClustering(
 ): Promise<number[][]> 
 {
   // Initialize clusters array
-  let clusters: number[][] = [];
-  let clusterDict: Record<number, Set<number>> = {};
+  let clusterDict: Record<number, number[]> = {};
   let n = D.shape[0];
   for (let i = 0; i < n; i++) {
     let means = D.mean(1);
     let cluster = await means.argMax(0).array() as number;
-    let col = await D.slice([cluster, 0], [1, n]).argMax().array() as number;
+    let colArr = await D.slice([cluster, 0], [1, n]).argMax(1).array() as number[];
+    let col = colArr[0];
     // Create a tensor that will be used to zero out the selected column
     const mask = tf.oneHot(col, n).cast(D.dtype).sub(1).abs();
 
-    // Use broadcasting to apply the mask
     D = D.mul(mask);
-
-    // Dispose mask tensor
     mask.dispose();
+    if (! (cluster in clusterDict) ){
+      clusterDict[cluster] = [];
+    } 
+    clusterDict[cluster].push(col);
   }
+  let clusters: number[][] = Object.entries(clusterDict).map(
+    ([key, values]) => values
+  );
+
   return clusters;
 }
 

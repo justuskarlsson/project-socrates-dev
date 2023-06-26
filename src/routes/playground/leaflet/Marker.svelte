@@ -12,7 +12,14 @@
   let marker: L.Marker | null = null;
   let small = false;
   function onZoom (event: L.ZoomAnimEvent){
-    small = event.zoom < -1;
+    const mapX = event.center.lat;
+    const mapY = event.center.lng;
+    let dist = Math.hypot(x - mapX, y - mapY);
+    console.log(mapX, mapY, x, y);
+    if (dist < 200000000) {
+      small = event.zoom < -1;
+    }
+    
   }
   onMount(()=>{
     let map = mapContext.value;
@@ -38,7 +45,7 @@
 <div bind:this={el}>
   {#if small}
     <div class="bg-white w-fit h-fit">
-      {text}
+      {text.slice(0, 5)}
     </div>
   {:else}
     <div class="w-[200px] h-[200px]">
