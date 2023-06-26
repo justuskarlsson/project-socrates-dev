@@ -171,9 +171,6 @@
 
 	function zoom(event: WheelEvent) {
 		event.preventDefault();
-		// velocity -> 1.0 straight to middle
-
-		const v = 0.2;
 		let delta = event.deltaY * -0.01;
 		if (scaleLevel + delta < -18) {
 			return;
@@ -267,7 +264,6 @@
 		position: absolute;
 		z-index: 10;
 	}
-	/* Add custom scrollbar styles */
 	::-webkit-scrollbar {
 		width: 0px;
 		height: 0px;
