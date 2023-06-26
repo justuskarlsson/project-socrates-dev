@@ -172,7 +172,6 @@
 	function zoom(event: WheelEvent) {
 		event.preventDefault();
 		// velocity -> 1.0 straight to middle
-		console.log(scaleLevel);
 
 		const v = 0.2;
 		let delta = event.deltaY * -0.01;
@@ -182,32 +181,10 @@
 		if (scaleLevel + delta > 5) {
 			return;
 		}
-		let { clientWidth, clientHeight } = mapRoot;
-
-		let prevTl = getTopLeft();
-		let prevScale = scale;
-		let oldSize = {
-			x: clientWidth * (1 / prevScale),
-			y: clientHeight * (1 / prevScale),
-		}
 		scaleLevel += delta;
 		let base = scaleLevel < 0 ? 1.12 : 1.25;
 		scale = Math.pow(base, scaleLevel);
-		let newSize = {
-			x: clientWidth * (1 / scale),
-			y: clientHeight * (1 / scale),
-		}
-		const deltaWidth = oldSize.x - newSize.x;
-		const deltaHeight = oldSize.y - newSize.y;
-		const newTl = {
-			x: prevTl.x + deltaWidth / 2,
-			y: prevTl.y + deltaHeight / 2
-		}
 		mapWorld.style.transform = `scale(${scale})`;
-		scroll.top = newTl.y;
-		scroll.left = newTl.x;
-		mapRoot.scrollTop = scroll.top;
-		mapRoot.scrollLeft = scroll.left;
 	}
 	const None = (event: UIEvent) => {
 		event.stopPropagation();
