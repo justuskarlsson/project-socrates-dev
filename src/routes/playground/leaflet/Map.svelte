@@ -19,7 +19,7 @@
 		})
     mapContext.value = map;
 		let image = L.imageOverlay(
-			"https://www.camelotgamestore.com/nopc/content/images/thumbs/0000494_blank-grid-map-36x72-double-sided_550.jpeg",
+			"https://wallpaperset.com/w/full/a/f/f/371852.jpg",
 			bounds,
 		).addTo(map);
     map.fitBounds(bounds);

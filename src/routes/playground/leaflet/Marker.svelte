@@ -37,7 +37,9 @@
 
 <div bind:this={el}>
   {#if small}
-    {text}
+    <div class="bg-white w-fit h-fit">
+      {text}
+    </div>
   {:else}
     <div class="w-[200px] h-[200px]">
       <ChatMessage content={text} role="user" />
