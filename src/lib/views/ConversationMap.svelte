@@ -187,21 +187,21 @@
 		let prevTl = getTopLeft();
 		let prevScale = scale;
 		let oldSize = {
-			x: clientWidth * prevScale,
-			y: clientHeight * prevScale,
+			x: clientWidth * (1 / prevScale),
+			y: clientHeight * (1 / prevScale),
 		}
 		scaleLevel += delta;
 		let base = scaleLevel < 0 ? 1.12 : 1.25;
 		scale = Math.pow(base, scaleLevel);
 		let newSize = {
-			x: clientWidth * scale,
-			y: clientHeight * scale,
+			x: clientWidth * (1 / scale),
+			y: clientHeight * (1 / scale),
 		}
 		const deltaWidth = oldSize.x - newSize.x;
 		const deltaHeight = oldSize.y - newSize.y;
 		const newTl = {
-			x: prevTl.x - deltaWidth / 2,
-			y: prevTl.y - deltaHeight / 2
+			x: prevTl.x + deltaWidth / 2,
+			y: prevTl.y + deltaHeight / 2
 		}
 		mapWorld.style.transform = `scale(${scale})`;
 		scroll.top = newTl.y;
