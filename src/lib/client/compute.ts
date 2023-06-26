@@ -17,3 +17,13 @@ export async function euclideanDists(input: tf.Tensor1D, ref: tf.Tensor2D) :
   let arr = await distances.array();
   return arr as number[];
 }
+
+
+export async function pairwiseCosineDist(ref: tf.Tensor2D) :
+   Promise<number[][]> 
+{
+  let distances = ref.matMul(ref.transpose());
+  distances.print();
+  let arr = await distances.array();
+  return arr as number[][];
+}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { euclideanDists, minEuclideanDist } from '$lib/client/compute';
+	import { euclideanDists, pairwiseCosineDist } from '$lib/client/compute';
 	import { Message, allEmbeddings, allMessages } from '$lib/client/stores';
 	import ChatMessage from '$lib/components/ChatMessage.svelte';
   import * as tf from '@tensorflow/tfjs';
@@ -44,6 +44,7 @@
     }
     matches = matches;
     inputEmbedding.dispose();
+    let pairwiseDist = await pairwiseCosineDist(refEmbeddings);
   }
 
   function maybeSubmit(event: KeyboardEvent){
