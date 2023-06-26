@@ -172,28 +172,37 @@
 	function zoom(event: WheelEvent) {
 		event.preventDefault();
 		// velocity -> 1.0 straight to middle
+		console.log(scaleLevel);
+
 		const v = 0.2;
 		let delta = event.deltaY * -0.01;
+		if (scaleLevel + delta < -18) {
+			return;
+		}
+		if (scaleLevel + delta > 5) {
+			return;
+		}
 		let { clientWidth, clientHeight } = mapRoot;
 
 		let prevTl = getTopLeft();
-		let prevCenter = getScreenCenter();
-		let prevMousePos = mousePos;
 		let prevScale = scale;
+		let oldSize = {
+			x: clientWidth * prevScale,
+			y: clientHeight * prevScale,
+		}
 		scaleLevel += delta;
 		let base = scaleLevel < 0 ? 1.12 : 1.25;
 		scale = Math.pow(base, scaleLevel);
-		let scaleChange = scale / prevScale;
-		let newCenter = {
-			x: v * mousePos.x + (1 - v) * prevCenter.x,
-			y: v * mousePos.y + (1 - v) * prevCenter.y
-		};
-		let newTl = {
-			x: newCenter.x - clientWidth / (2 * scale),
-			y: newCenter.y - clientHeight / (2 * scale)
-		};
-		// console.log("\n", scale, getTopLeft(), mousePos);
-		// console.log(prevScale, scale)
+		let newSize = {
+			x: clientWidth * scale,
+			y: clientHeight * scale,
+		}
+		const deltaWidth = oldSize.x - newSize.x;
+		const deltaHeight = oldSize.y - newSize.y;
+		const newTl = {
+			x: prevTl.x - deltaWidth / 2,
+			y: prevTl.y - deltaHeight / 2
+		}
 		mapWorld.style.transform = `scale(${scale})`;
 		scroll.top = newTl.y;
 		scroll.left = newTl.x;
@@ -223,12 +232,12 @@
 				<!-- content here -->
 				<!-- each message group -->
 				<div class="shadow-2xl p-4 absolute rounded-xl
-									 w-[420px] max-h-[960px] min-h-[240px] overflow-y-scroll
+									 w-[420px]  min-h-[240px]
 									overflow-x-hidden  "
 									class:border-4={curIsland?.group.id === group.id}
 									class:border-sky-300={curIsland?.group.id === group.id}
 									style="left:{group.data.x}px; top:{group.data.y}px;"  
-									on:wheel={None}>
+									>
 					<!-- each message in group -->
 					{#each messages as message}
 					<span class="cursor-auto" on:mousedown={None} on:mouseup={None}>
