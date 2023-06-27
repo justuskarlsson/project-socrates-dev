@@ -1,28 +1,39 @@
+<script context="module" lang="ts">
+	export interface MapContext {
+		value: L.Map | null,
+
+	};
+</script>
 <script lang="ts">
 	import L from "leaflet";
 	import { setContext } from "svelte";
 
-  // Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 	export let size: number = 5000;
+  export let minZoom: number = -7;
 	let map: L.Map | null = null;
-  let mapContext: {value: L.Map | null} = {value: null};
+  
+  let context: MapContext = {
+    value: null
+  };
+  
+  // Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 
-
-  setContext("map", mapContext);
+  setContext("map", context);
 
   const bounds = L.latLngBounds([-size, -size], [size, size]);
 
   function createMap(container: HTMLDivElement) {
     map = L.map(container, {
 			crs: L.CRS.Simple,
-			minZoom: -7
+			minZoom,
 		})
-    mapContext.value = map;
-		let image = L.imageOverlay(
+    context.value = map;
+		L.imageOverlay(
 			"https://wallpaperset.com/w/full/a/f/f/371852.jpg",
 			bounds,
 		).addTo(map);
     map.fitBounds(bounds);
+    // map.panInsideBounds([[-2000, -2000], [2000, 2000]])
 		return {
        destroy: () => {
 				 map?.remove();

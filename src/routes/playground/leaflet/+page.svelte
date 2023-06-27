@@ -1,8 +1,8 @@
 <script lang="ts">
 	import L from "leaflet";
 	import { onMount } from "svelte";
-	import Map from "./Map.svelte"
-	import Marker from "./Marker.svelte";
+	import Map from "$lib/components/Map.svelte"
+	import Marker from "$lib/components/Marker.svelte";
 	import * as tf from '@tensorflow/tfjs';
 	import { allEmbeddings, allMessages } from "$lib/client/stores";
 	import { greedyClustering, pairwiseCosineDist } from "$lib/client/compute";

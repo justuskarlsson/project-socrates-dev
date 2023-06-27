@@ -17,7 +17,7 @@
     let dist = Math.hypot(x - mapX, y - mapY);
     console.log(mapX, mapY, x, y);
     if (dist < 200000000) {
-      small = event.zoom < -1;
+      small = event.zoom < -4;
     }
     
   }
