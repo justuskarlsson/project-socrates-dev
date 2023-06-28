@@ -8,6 +8,7 @@
 	} from '$lib/client/stores';
 	import Map from '$lib/components/Map.svelte';
 	import MapMessageGroup, { MessageGroupTree } from '$lib/components/MapMessageGroup.svelte';
+	import MapToolbar from '$lib/components/MapToolbar.svelte';
 	import { onMount } from 'svelte';
 
 	// Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
@@ -26,7 +27,7 @@
 		while (curSize() > prevSize) {
 			prevSize = curSize();
 			$allMessageGroups.map((group) => {
-				if (group.parent in groups) {
+				if (group.parent in groups && !(group.id in groups)) {
 					const tree = new MessageGroupTree(group);
 					groups[group.id] = tree;
 					groups[group.parent].children.push(tree);
@@ -56,7 +57,10 @@
 <div class="relative">
 	<Map size={mapSize} minZoom={-6}>
 		{#if treeRoot}
-			<MapMessageGroup tree={treeRoot} />
+			<MapMessageGroup tree={treeRoot} hide={true} />
 		{/if}
 	</Map>
+  <!-- <div class="absolute right-4 top-4 z-[1000]">
+    click
+  </div> -->
 </div>

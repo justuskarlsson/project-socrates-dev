@@ -1,4 +1,5 @@
 <script lang="ts" context="module">
+  import MapMessageGroup from "./MapMessageGroup.svelte"
   export class MessageGroupTree {
     constructor(group: MessageGroup) {
       this.group = group;
@@ -12,6 +13,7 @@
       return this.children.length === 0;
     }
   };
+
 </script>
 
 <script lang="ts">
@@ -22,11 +24,12 @@
 	import type { Message, MessageGroup } from "$lib/client/stores";
 
   export let tree: MessageGroupTree;
+  export let hide: boolean = false;
 
   let group = tree.group;
   let x = group.data.x;
   let y = group.data.y;
-
+  console.log(tree);
   let el: HTMLDivElement;
   let context = getContext<MapContext>("map");
   let marker: L.Marker | null = null;
@@ -41,6 +44,8 @@
   }
 
   onMount(()=>{
+    if (hide) return;
+
     let map = context.value as L.Map;
     small = map.getZoom() < 0;
     setScale(map.getZoom());
@@ -56,6 +61,7 @@
   })
 
   onDestroy(()=>{
+    if (hide) return;
     marker?.remove();
     context.value?.removeEventListener("zoomanim", onZoom);
   })
@@ -67,7 +73,7 @@
       style="transform:scale({scale}); transform-origin: top left;"
   >
     {#each tree.children as child}
-      <this tree={child} />
+      <MapMessageGroup tree={child} />
     {/each}
     {#each tree.messages as {content, role}}
        <ChatMessage {content} {role} />

@@ -1,10 +1,11 @@
 <script>
+	import { getMapRoot } from '$lib/client/stores';
 	import { createEventDispatcher } from 'svelte';
 	import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
 	const dispatch = createEventDispatcher();
 
-	function addGroup() {
-		dispatch('add-group');
+	async function addGroup() {
+		dispatch('add-group');    
 	}
 </script>
 

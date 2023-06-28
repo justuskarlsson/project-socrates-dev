@@ -243,6 +243,14 @@ export async function getMapRoot(){
   });
 }
 
+export async function addMapGroup(parent: string, x: number, y: number){
+  return MessageGroup.collection.add({
+    parent,
+    ref_type: "map",
+    data: {x, y}
+  })
+}
+
 interface PageNav {
   course?: string;
   lesson?: string;

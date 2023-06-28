@@ -10,6 +10,7 @@
 	import { setContext } from 'svelte';
 	import MapToolbar from './MapToolbar.svelte';
 	import MapBackground from './MapBackground.svelte';
+	import { MessageGroup, addMapGroup, addMapMessageGroup, getMapRoot } from '$lib/client/stores';
 
 	export let size: number = 5000;
 	export let minZoom: number = -7;
@@ -32,8 +33,13 @@
 			target: div,
 			props: {}
 		});
-    toolbarComponent.$on('add-group', () => {
-      console.log(map.getCenter())
+    toolbarComponent.$on('add-group', async () => {
+      let pos = map.getCenter();
+      let y = pos.lat;
+      let x = pos.lng;
+      let mapRoot = await getMapRoot() as MessageGroup;
+      addMapGroup(mapRoot.id, x, y);
+
     });
 		return div;
 	};
