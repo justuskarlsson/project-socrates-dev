@@ -19,7 +19,7 @@
              <MessageGroup {x} {y} text={content} />
         {/each}
     </Map>
-    <div class="absolute right-4 top-4 z-1000">
+    <!-- <div class="absolute right-4 top-4 z-1000">
         bla
-    </div>
+    </div> -->
 </div>

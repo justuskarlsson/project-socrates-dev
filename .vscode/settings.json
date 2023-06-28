@@ -1,4 +1,7 @@
 {
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
   "workbench.tree.indent": 16,
   "workbench.editor.labelFormat": "short",
   "explorer.sortOrder": "filesFirst",

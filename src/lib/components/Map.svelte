@@ -9,6 +9,7 @@
 	import L from 'leaflet';
 	import { setContext } from 'svelte';
 	import MapToolbar from './MapToolbar.svelte';
+	import MapBackground from './MapBackground.svelte';
 
 	export let size: number = 5000;
 	export let minZoom: number = -7;
@@ -40,7 +41,14 @@
 			minZoom
 		});
 		context.value = map;
-		L.imageOverlay('https://wallpaperset.com/w/full/a/f/f/371852.jpg', bounds).addTo(map);
+    let bgDummy = document.createElement("div");
+    new MapBackground({target: bgDummy});
+
+    // convert the SVG pattern to a data URL
+    // const svgDataUrl = `data:image/svg+xml;base64,${btoa(svgPattern)}`;
+    const svgDataUrl = `data:image/svg+xml;base64,${btoa(bgDummy.innerHTML)}`;
+    const imageUrl = 'https://wallpaperset.com/w/full/a/f/f/371852.jpg'
+		L.imageOverlay(svgDataUrl, bounds).addTo(map);
 		map.fitBounds(bounds);
     map.setView([0, 0], -5)
 		toolbar.addTo(map);
@@ -71,3 +79,17 @@
 <div class="w-screen h-[90vh]" use:createMap>
 	<slot />
 </div>
+
+
+<style>
+  /* :global(.leaflet-container) {
+    background:
+      linear-gradient(0deg, transparent 24px, rgba(0,0,0,.1) 25px, transparent 26px),
+      linear-gradient(90deg, transparent 24px, rgba(0,0,0,.1) 25px, transparent 26px),
+      theme("colors.parchment") !important;
+    background-size: 50px 50px !important;
+  } */
+  /* :global(.leaflet-container) {
+    background: linear-gradient(to right, theme("colors.parchment"), theme("colors.gray.600")) !important;
+  } */
+</style>
