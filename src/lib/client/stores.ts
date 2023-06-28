@@ -2,6 +2,7 @@
 import { get, writable, type Writable } from 'svelte/store';
 import { Collection, DataItem } from "./collection"
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import { arrayRemove } from 'firebase/firestore';
 
 export class Course extends DataItem {
   name: string;
@@ -201,10 +202,10 @@ export async function loadAll(){
   loaded.set(true);
 }
 
-export async function addMapMessageGroup(x: number, y: number){
+export async function addMapMessageGroup(x: number, y: number) : Promise<MessageGroup>{
   let courseId = get(selectedCourse)?.id;
   if (!courseId) {
-    return console.error("Course id not found");
+    throw Error("addMapMessageGroup: Course id not found");
   }
   let courseGroup = get(allMessageGroups).find((g) => g.ref_type === "course" && g.data === courseId);
   if (!courseGroup) {
@@ -216,6 +217,30 @@ export async function addMapMessageGroup(x: number, y: number){
     parent: courseGroup.id,
     data: {x, y}
   })
+}
+
+
+async function addOrFetch(identifier: Partial<MessageGroup>, extra: Partial<MessageGroup> = {}){
+  const andFn = (prev: boolean, cur: boolean) => prev && cur;
+  let res = get(allMessageGroups).find(
+    (g: any) => Object.entries(identifier).map(([key, val]) => g[key] === val).reduce(andFn, true)
+  );
+  if (!res) {
+    let data = Object.assign(identifier, extra);
+    res = await MessageGroup.collection.add(data);
+  }
+  return res;
+}
+
+export async function getMapRoot(){
+  let courseId = get(selectedCourse)?.id;
+  if (!courseId) {
+    return console.error("Course id not found");
+  }
+  let courseGroup = await addOrFetch({ref_type: "course", data: courseId});
+  return addOrFetch({ref_type: "map", parent: courseGroup.id}, {
+    data: {x: 0, y: 0}
+  });
 }
 
 interface PageNav {
