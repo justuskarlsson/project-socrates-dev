@@ -20,6 +20,7 @@
   function onZoom (event: L.ZoomAnimEvent){
     setScale(event.zoom);
   }
+
   onMount(()=>{
     let map = context.value as L.Map;
     small = map.getZoom() < 0;
@@ -43,12 +44,15 @@
 </script>
 
 <div bind:this={el}>
-  <div class="w-[200px] h-[200px] bg-slate-200"
+  <div class="min-w-[200px] min-h-[200px] bg-slate-200"
       style="transform:scale({scale}); transform-origin: top left;"
   >
     <ChatMessage content={text} role="user" />
   </div>
 </div>
+
+
+
 
 <style>
 	/* :global(.map-marker) {
