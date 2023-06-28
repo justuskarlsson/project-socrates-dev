@@ -1,12 +1,31 @@
+<script lang="ts" context="module">
+  export class MessageGroupTree {
+    constructor(group: MessageGroup) {
+      this.group = group;
+    }
+    group: MessageGroup;
+    parent: MessageGroupTree | null;
+    children: MessageGroupTree[] = [];
+    messages: Message[] = [];
+
+    isLeaf() : boolean {
+      return this.children.length === 0;
+    }
+  };
+</script>
+
 <script lang="ts">
 	import { getContext, onDestroy, onMount } from "svelte";
   import L, { map } from "leaflet"
 	import ChatMessage from "$lib/components/ChatMessage.svelte";
 	import type { MapContext } from "./Map.svelte";
+	import type { Message, MessageGroup } from "$lib/client/stores";
 
-  export let x: number;
-  export let y: number;
-  export let text: string;
+  export let tree: MessageGroupTree;
+
+  let group = tree.group;
+  let x = group.data.x;
+  let y = group.data.y;
 
   let el: HTMLDivElement;
   let context = getContext<MapContext>("map");
@@ -44,10 +63,15 @@
 </script>
 
 <div bind:this={el}>
-  <div class="min-w-[200px] min-h-[200px] bg-slate-200"
+  <div class="min-w-[200px] min-h-[200px] bg-ghost"
       style="transform:scale({scale}); transform-origin: top left;"
   >
-    <ChatMessage content={text} role="user" />
+    {#each tree.children as child}
+      <this tree={child} />
+    {/each}
+    {#each tree.messages as {content, role}}
+       <ChatMessage {content} {role} />
+    {/each}
   </div>
 </div>
 

@@ -26,13 +26,15 @@
 	const bounds = L.latLngBounds([-size, -size], [size, size]);
 	let toolbar = new L.Control({ position: 'topright' });
 	let toolbarComponent;
-	toolbar.onAdd = (map) => {
+	toolbar.onAdd = (map: L.Map) => {
 		let div = L.DomUtil.create('div');
 		toolbarComponent = new MapToolbar({
 			target: div,
 			props: {}
 		});
-    toolbarComponent.$on('click-eye', ({ detail }) => console.log(detail));
+    toolbarComponent.$on('add-group', () => {
+      console.log(map.getCenter())
+    });
 		return div;
 	};
 	function createMap(container: HTMLDivElement) {

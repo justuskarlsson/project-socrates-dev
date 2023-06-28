@@ -9,7 +9,8 @@ module.exports = {
     extend: {
       colors: {
         primary: colors.amber[100],
-        parchment: "#fefcaf"
+        parchment: "#fefcaf",
+        ghost: "rgba(221, 204, 204, 0.5)"
       },
       animation: {
         'spin-slow': 'spin 3s ease-in-out infinite',
