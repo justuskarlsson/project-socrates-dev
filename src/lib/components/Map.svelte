@@ -8,13 +8,11 @@
 
 	import L from 'leaflet';
 	import { setContext } from 'svelte';
-	import MapToolbar from './MapToolbar.svelte';
 	import MapBackground from './MapBackground.svelte';
-	import { MessageGroup, addMapGroup, addMapMessageGroup, getMapRoot } from '$lib/client/stores';
 
 	export let size: number = 5000;
 	export let minZoom: number = -7;
-	let map: L.Map | null = null;
+	export let map: L.Map | null = null;
 
 	let context: MapContext = {
 		value: null
@@ -25,24 +23,6 @@
 	setContext('map', context);
 
 	const bounds = L.latLngBounds([-size, -size], [size, size]);
-	let toolbar = new L.Control({ position: 'topright' });
-	let toolbarComponent;
-	toolbar.onAdd = (map: L.Map) => {
-		let div = L.DomUtil.create('div');
-		toolbarComponent = new MapToolbar({
-			target: div,
-			props: {}
-		});
-    toolbarComponent.$on('add-group', async () => {
-      let pos = map.getCenter();
-      let y = pos.lat;
-      let x = pos.lng;
-      let mapRoot = await getMapRoot() as MessageGroup;
-      addMapGroup(mapRoot.id, x, y);
-
-    });
-		return div;
-	};
 	function createMap(container: HTMLDivElement) {
 		map = L.map(container, {
 			crs: L.CRS.Simple,
@@ -59,10 +39,8 @@
 		L.imageOverlay(svgDataUrl, bounds).addTo(map);
 		map.fitBounds(bounds);
     map.setView([0, 0], -5)
-		toolbar.addTo(map);
 		return {
 			destroy: () => {
-				toolbar.remove();
 				map?.remove();
 				map = null;
 			}
@@ -84,7 +62,7 @@
 />
 <svelte:window on:resize={resizeMap} />
 
-<div class="w-screen h-[90vh]" use:createMap>
+<div class="w-screen h-[91.7vh]" use:createMap>
 	<slot />
 </div>
 
