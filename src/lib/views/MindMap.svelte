@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+	Message,
 		MessageGroup,
 		addMapGroup,
 		addMapMessageGroup,
@@ -7,24 +8,75 @@
 		allMessages,
 		getMapRoot
 	} from '$lib/client/stores';
+	import { MessageStream, SYS_MESSAGE_TEACHER } from '$lib/client/util';
 	import ChatInput from '$lib/components/ChatInput.svelte';
 	import Map from '$lib/components/Map.svelte';
 	import MapMessageGroup, { MessageGroupTree } from '$lib/components/MapMessageGroup.svelte';
-	import MapToolbar from '$lib/components/MapToolbar.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
+	import { writable } from 'svelte/store';
+	import { fly } from 'svelte/transition';
+  import type * as Req from "$lib/request_types"
 
 	// Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 	const mapSize = 50000;
   let map: L.Map | null = null;
-  
+	let mapRoot: MessageGroup | null = null;
+  let selectedGroup = writable<MessageGroup | null>(null);
+  let prompt = writable<string>("");
+  let answer = writable<string>("");
+    
+  let groups: Record<string, MessageGroupTree> = {};
   let treeRoot: MessageGroupTree | null = null;
+  setContext("selectedGroup", selectedGroup);
+  setContext("prompt", prompt);
+  setContext("answer", answer);
+
+  async function sendMessage(content: string) {
+		if (!$selectedGroup || !($selectedGroup.id in groups)) {
+			return console.error("Could not find active group");
+		}
+    
+    const body: Req.Chat = { 
+      messages: [
+        SYS_MESSAGE_TEACHER,
+        ...groups[$selectedGroup.id].messages.map(({content, role}) => ({
+          content,
+          role
+        })), {
+					content: $prompt,
+					role: "user",
+				}
+      ]
+    };
+
+    const messageStream = MessageStream(body);
+    
+    for await (let part of messageStream){
+      $answer += part;
+    }
+    let newPrompt = await Message.collection.add({
+      content: $prompt,
+      groupId: $selectedGroup.id,
+      role: "user"
+    });
+    let newAnswer = await Message.collection.add({
+      content: $answer,
+      groupId: $selectedGroup.id,
+      role: "assistant"
+    });
+		$allMessages = [...$allMessages, newPrompt, newAnswer];
+    $answer = "";
+    $prompt = "";
+	}
+
+
 	async function makeTree(...reactive: any) {
 		if (mapRoot === null) {
 			return;
 		}
     treeRoot = new MessageGroupTree(mapRoot);
-		let groups: Record<string, MessageGroupTree> = {
+		groups = {
 			[mapRoot.id]: treeRoot
 		};
 		let prevSize = 0;
@@ -51,9 +103,11 @@
 		makeTree($allMessageGroups, $allMessages, mapRoot);
 	}
 
-	let mapRoot: MessageGroup | null = null;
 	onMount(async () => {
 		mapRoot = (await getMapRoot()) as MessageGroup;
+    map?.on("click", () => {
+      $selectedGroup = null;
+    })
 	});
 
   async function onAddClick(){
@@ -83,9 +137,14 @@
 				<span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Add island </span>
 			</div>
 		</div>
-		<div class="absolute px-6 bottom-6 mx-auto max-w-[720px]">
-			<ChatInput onSendMessage={()=>{}} />
+    {#if $selectedGroup}
+		<div class="absolute px-6 bottom-6 mx-auto max-w-[720px]"
+          in:fly
+          out:fly
+    >
+			<ChatInput onSendMessage={sendMessage} bind:value={$prompt} />
 		</div>
+    {/if}
 	</div>
 </div>
 

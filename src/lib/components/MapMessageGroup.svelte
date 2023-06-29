@@ -22,6 +22,7 @@
 	import ChatMessage from "$lib/components/ChatMessage.svelte";
 	import type { MapContext } from "./Map.svelte";
 	import type { Message, MessageGroup } from "$lib/client/stores";
+	import type { Writable } from "svelte/store";
 
   export let tree: MessageGroupTree;
   export let hide: boolean = false;
@@ -35,6 +36,18 @@
   let marker: L.Marker | null = null;
   let small = false;
   let scale = 1.0;
+
+  const selectedGroup = getContext<Writable<MessageGroup | null>>("selectedGroup");
+  const prompt = getContext<Writable<string>>("prompt");
+  const answer = getContext<Writable<string >>("answer");
+  let isSelected = false;
+
+  $: isSelected = $selectedGroup?.id === group.id;
+
+  function selectThis(){
+    $selectedGroup = group;
+  }
+
   function setScale(zoom: number) {
     scale = Math.pow(2, zoom+4);
 
@@ -57,6 +70,7 @@
       icon: divIcon,
       draggable: true,
     }).addTo(map)
+    marker.addEventListener("click", selectThis);
     map.addEventListener("zoomanim", onZoom)
   })
 
@@ -64,6 +78,7 @@
     if (hide) return;
     marker?.remove();
     context.value?.removeEventListener("zoomanim", onZoom);
+    context.value?.removeEventListener("click", selectThis);
   })
 
 </script>
@@ -71,6 +86,7 @@
 <div bind:this={el}>
   <div class="min-w-[200px] min-h-[200px] bg-ghost"
       style="transform:scale({scale}); transform-origin: top left;"
+    class:selected={isSelected}
   >
     {#each tree.children as child}
       <MapMessageGroup tree={child} />
@@ -78,6 +94,12 @@
     {#each tree.messages as {content, role}}
        <ChatMessage {content} {role} />
     {/each}
+    {#if isSelected && $prompt.length}
+      <ChatMessage content={$prompt} role="user" />
+    {/if}
+    {#if isSelected && $answer.length}
+      <ChatMessage content={$answer} role="assistant" />
+    {/if}
   </div>
 </div>
 
@@ -89,5 +111,8 @@
 		width:30px;
 		transform:translateX(-50%) translateY(-25%);
 	} */
+  .selected {
+    @apply border-2 border-blue-300;
+  }
 
 </style>

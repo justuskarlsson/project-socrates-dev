@@ -26,7 +26,8 @@
 	function createMap(container: HTMLDivElement) {
 		map = L.map(container, {
 			crs: L.CRS.Simple,
-			minZoom
+			minZoom,
+      attributionControl: false
 		});
 		context.value = map;
     let bgDummy = document.createElement("div");
@@ -62,7 +63,7 @@
 />
 <svelte:window on:resize={resizeMap} />
 
-<div class="w-screen h-[91.7vh]" use:createMap>
+<div class="w-screen h-[calc(100vh-4rem)]" use:createMap>
 	<slot />
 </div>
 
