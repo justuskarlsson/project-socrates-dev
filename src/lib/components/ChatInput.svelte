@@ -34,12 +34,10 @@
   $: {
     if (!sending) {
       value = textareaValue;
-      console.log(value)
     }
   }
 
   async function maybeSendMessage(event: KeyboardEvent){
-    console.log(event.key)
     if (event.altKey && event.key == "s") {
       lightningPromptVisible = !lightningPromptVisible;
       event.preventDefault();

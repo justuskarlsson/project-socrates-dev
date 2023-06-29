@@ -12,6 +12,7 @@
 
 	export let size: number = 5000;
 	export let minZoom: number = -7;
+	export let maxZoom: number = -2;
 	export let map: L.Map | null = null;
 
 	let context: MapContext = {
@@ -27,7 +28,9 @@
 		map = L.map(container, {
 			crs: L.CRS.Simple,
 			minZoom,
-      attributionControl: false
+      maxZoom,
+      attributionControl: false,
+      keyboardPanDelta: 150.0
 		});
 		context.value = map;
     let bgDummy = document.createElement("div");

@@ -91,7 +91,6 @@
 				}
 			});
 		}
-    console.log(curSize())
 		$allMessages.map((message) => {
 			if (message.groupId && message.groupId in groups) {
         groups[message.groupId].messages.push(message);
@@ -115,13 +114,14 @@
     let y = pos.lat;
     let x = pos.lng;
     let mapRoot = await getMapRoot() as MessageGroup;
-    addMapGroup(mapRoot.id, x, y);
+    let newGroup = await addMapGroup(mapRoot.id, x, y);
+    $allMessageGroups = [...$allMessageGroups, newGroup];
   }
 
 </script>
 
 <div class="relative ">
-	<Map bind:map={map} size={mapSize} minZoom={-6}>
+	<Map bind:map={map} size={mapSize} minZoom={-6} maxZoom={-3}>
 		{#if treeRoot}
 			<MapMessageGroup tree={treeRoot} hide={true} />
 		{/if}
@@ -134,7 +134,7 @@
 				on:click={onAddClick}
 			>
 				<IoIosAddCircleOutline />
-				<span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Add island </span>
+				<span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Add group </span>
 			</div>
 		</div>
     {#if $selectedGroup}

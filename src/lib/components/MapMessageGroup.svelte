@@ -21,8 +21,9 @@
   import L, { map } from "leaflet"
 	import ChatMessage from "$lib/components/ChatMessage.svelte";
 	import type { MapContext } from "./Map.svelte";
-	import type { Message, MessageGroup } from "$lib/client/stores";
+	import { MessageGroup, type Message } from "$lib/client/stores";
 	import type { Writable } from "svelte/store";
+	import { marked } from "marked";
 
   export let tree: MessageGroupTree;
   export let hide: boolean = false;
@@ -30,7 +31,6 @@
   let group = tree.group;
   let x = group.data.x;
   let y = group.data.y;
-  console.log(tree);
   let el: HTMLDivElement;
   let context = getContext<MapContext>("map");
   let marker: L.Marker | null = null;
@@ -56,6 +56,17 @@
     setScale(event.zoom);
   }
 
+  async function onDragEnd(e: L.DragEndEvent) {
+    let p = e.target.getLatLng();
+    let pos = {
+      y: p.lat,
+      x: p.lng,
+    };
+    await MessageGroup.collection.update(group.id, {
+      data: pos
+    })
+  }
+
   onMount(()=>{
     if (hide) return;
 
@@ -71,6 +82,7 @@
       draggable: true,
     }).addTo(map)
     marker.addEventListener("click", selectThis);
+    marker.on("dragend", onDragEnd);
     map.addEventListener("zoomanim", onZoom)
   })
 
@@ -84,7 +96,7 @@
 </script>
 
 <div bind:this={el}>
-  <div class="min-w-[200px] min-h-[200px] bg-ghost"
+  <div class="min-w-[400px] min-h-[200px] bg-ghost"
       style="transform:scale({scale}); transform-origin: top left;"
     class:selected={isSelected}
   >
