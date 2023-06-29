@@ -33,11 +33,13 @@ export async function addEmbeddings(){
     if (!(message.id in messageEmbeddings)) {
       const messageId = message.id as string;
       const content = message.data().content as string;
+      const user = message.data().user as string;
       const embedding: number[] = await getEmbedding(content);
       console.log(messageId, embedding[0], embedding.length);
       await embeddingsDb.add({
         messageId,
         embedding,
+        user,
         timestamp: new Date(),
       });
     }

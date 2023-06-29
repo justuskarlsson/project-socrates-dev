@@ -3,6 +3,7 @@ import { get, writable, type Writable } from 'svelte/store';
 import { Collection, DataItem } from "./collection"
 import type { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { arrayRemove } from 'firebase/firestore';
+import { userStore } from './firebase';
 
 export class Course extends DataItem {
   name: string;
@@ -201,6 +202,12 @@ export async function loadAll(){
   await Promise.all(promises);
   loaded.set(true);
 }
+
+userStore.subscribe((user) => {
+  if (user) {
+    loadAll();
+  }
+})
 
 export async function addMapMessageGroup(x: number, y: number) : Promise<MessageGroup>{
   let courseId = get(selectedCourse)?.id;

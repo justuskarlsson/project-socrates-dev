@@ -30,7 +30,8 @@ export class Collection<T extends DataItem> {
   }
 
   async fetch(store: (Writable<T[]> | null) = null) : Promise<T[]>{
-    let snapshot =  await getDocs(this.collection);
+    const q = query(this.collection, where("user", "==", user!.uid))
+    let snapshot =  await getDocs(q);
     let items = this.mapSnapshot(snapshot);
     if (store) {
       store.set(items);
@@ -45,6 +46,9 @@ export class Collection<T extends DataItem> {
         id: doc.id, 
         timestamp: doc.data().timestamp.toDate()
       };
+      // if (!("user" in obj)) {
+      //   this.update(doc.id, {user: user!.uid} as Partial<T>);
+      // }
       if (this.fromFirebase) {
         obj = this.fromFirebase(obj);
       }
