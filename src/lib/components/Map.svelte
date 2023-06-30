@@ -13,6 +13,9 @@
 	export let size: number = 5000;
 	export let minZoom: number = -7;
 	export let maxZoom: number = -2;
+  export let x: number = 0.0;
+  export let y: number = 0.0;
+  export let zoom = -4;
 	export let map: L.Map | null = null;
 
 	let context: MapContext = {
@@ -30,7 +33,8 @@
 			minZoom,
       maxZoom,
       attributionControl: false,
-      keyboardPanDelta: 100.0
+      keyboardPanDelta: 100.0,
+      zoomSnap: 0.25
 		});
 		context.value = map;
     let bgDummy = document.createElement("div");
@@ -42,7 +46,7 @@
     const imageUrl = 'https://wallpaperset.com/w/full/a/f/f/371852.jpg'
 		L.imageOverlay(svgDataUrl, bounds).addTo(map);
 		map.fitBounds(bounds);
-    map.setView([0, 0], -5)
+    map.setView([y, x], zoom)
 		return {
 			destroy: () => {
 				map?.remove();
@@ -58,12 +62,6 @@
 	}
 </script>
 
-<link
-	rel="stylesheet"
-	href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-	integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-	crossorigin=""
-/>
 <svelte:window on:resize={resizeMap} />
 
 <div class="w-screen h-[calc(100vh-4rem)]" use:createMap>

@@ -114,8 +114,6 @@
       return;
     }
     let mousePos = e.latlng;
-    // let scale = Math.pow(2, map!.getZoom() + 4);
-    let count = 0;
     for (let tree of Object.values(trees)) {
       if ($dragging.id === tree.group.id) continue;
       let marker = tree.marker;
@@ -167,7 +165,9 @@
 </script>
 
 <div class="relative ">
-	<Map bind:map={map} size={mapSize} minZoom={-6} maxZoom={-3}>
+	<Map bind:map={map} size={mapSize} minZoom={-6} maxZoom={-1}
+       x={-1024} y={4176} zoom={-2.5}
+  >
 		{#if treeRoot}
 			<MapMessageGroup tree={treeRoot} hide={true} />
 		{/if}

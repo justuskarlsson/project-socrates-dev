@@ -55,7 +55,7 @@
   }
 
   function setScale(zoom: number) {
-    scale = Math.pow(2, zoom+4);
+    scale = Math.pow(2, zoom+2);
 
   }
   function onZoom (event: L.ZoomAnimEvent){

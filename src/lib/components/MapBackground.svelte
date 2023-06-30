@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let size: number = 5000;
-  export let rows: number = 250;
+  export let size: number = 10000;
+  export let rows: number = 1000;
   
   interface Line {
     x1: number;
