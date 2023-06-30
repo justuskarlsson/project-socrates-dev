@@ -8,6 +8,7 @@
     parent: MessageGroupTree | null;
     children: MessageGroupTree[] = [];
     messages: Message[] = [];
+    marker: L.Marker | null = null;
     level: number = 0;
 
     isLeaf() : boolean {
@@ -87,6 +88,7 @@
       icon: divIcon,
       draggable: true,
     }).addTo(map)
+    tree.marker = marker;
     marker.addEventListener("click", selectThis);
     marker.on("dragstart", onDragStart);
     marker.on("dragend", onDragEnd);
@@ -103,7 +105,7 @@
 </script>
 
 <div bind:this={el}>
-  <div class="min-w-[400px] min-h-[200px] bg-ghost"
+  <div class="map-message-group min-w-[400px] min-h-[200px] bg-ghost"
       style="transform:scale({scale}); transform-origin: top left;"
       class:selected={isSelected}
       class:receiving={isHovered && !isSelected && $dragging}

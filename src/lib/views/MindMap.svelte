@@ -17,6 +17,7 @@
 	import { writable } from 'svelte/store';
 	import { fly } from 'svelte/transition';
   import type * as Req from "$lib/request_types"
+	import L from 'leaflet';
 
 	// Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 	const mapSize = 50000;
@@ -104,11 +105,49 @@
 		makeTree($allMessageGroups, $allMessages, mapRoot);
 	}
 
+  function onMouseMove(e: L.LeafletMouseEvent) {
+    if (!$dragging) {
+      return;
+    }
+    let mousePos = e.latlng;
+    // let scale = Math.pow(2, map!.getZoom() + 4);
+    let count = 0;
+    for (let tree of Object.values(groups)) {
+      let marker = tree.marker;
+      if (!marker) continue;
+      let markerPos = marker.getLatLng();
+      let markerSize = marker.getElement()
+        ?.querySelector(".map-message-group")
+        ?.getBoundingClientRect();
+      if (!markerSize) continue;
+      let markerPoint = map!.latLngToContainerPoint(markerPos);
+
+      // Calculate the screen (pixel) coordinates of the marker bounds
+      let markerBoundsPoint = L.bounds(
+        [markerPoint.x - markerSize.width / 2, markerPoint.y - markerSize.height / 2],
+        [markerPoint.x + markerSize.width / 2, markerPoint.y + markerSize.height / 2]
+      );
+
+      // Convert the screen (pixel) coordinates of the marker bounds back to geographical coordinates
+      let markerBounds = L.latLngBounds(
+        map!.containerPointToLatLng(markerBoundsPoint.getBottomLeft()),
+        map!.containerPointToLatLng(markerBoundsPoint.getTopRight())
+      );
+
+      if (markerBounds.contains(mousePos)) {
+        count++;
+      }
+    }
+    console.log("Mouse over:", count);
+    // Set receiving = el not being dragged and mouse hovered
+  }
+
 	onMount(async () => {
 		mapRoot = (await getMapRoot()) as MessageGroup;
     map?.on("click", () => {
       $selectedGroup = null;
     })
+    map?.on("mousemove", onMouseMove);
 	});
 
   async function onAddClick(){
