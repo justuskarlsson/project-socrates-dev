@@ -124,8 +124,8 @@
 
       // Calculate the screen (pixel) coordinates of the marker bounds
       let markerBoundsPoint = L.bounds(
-        [markerPoint.x - markerSize.width / 2, markerPoint.y - markerSize.height / 2],
-        [markerPoint.x + markerSize.width / 2, markerPoint.y + markerSize.height / 2]
+        [markerPoint.x, markerPoint.y],
+        [markerPoint.x + markerSize.width, markerPoint.y + markerSize.height]
       );
 
       // Convert the screen (pixel) coordinates of the marker bounds back to geographical coordinates
