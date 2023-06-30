@@ -18,6 +18,7 @@
 	import { fly } from 'svelte/transition';
   import type * as Req from "$lib/request_types"
 	import L from 'leaflet';
+	import { browserLocalPersistence } from 'firebase/auth';
 
 	// Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 	const mapSize = 50000;
@@ -26,24 +27,26 @@
   let selectedGroup = writable<MessageGroup | null>(null);
   let prompt = writable<string>("");
   let answer = writable<string>("");
-  let dragging = writable<boolean>(false);
+  let dragging = writable<MessageGroup | null>(null);
+  let receiving = writable<MessageGroupTree | null>(null);
     
-  let groups: Record<string, MessageGroupTree> = {};
+  let trees: Record<string, MessageGroupTree> = {};
   let treeRoot: MessageGroupTree | null = null;
   setContext("selectedGroup", selectedGroup);
   setContext("prompt", prompt);
   setContext("answer", answer);
   setContext("dragging", dragging);
+  setContext("receiving", receiving);
 
   async function sendMessage(content: string) {
-		if (!$selectedGroup || !($selectedGroup.id in groups)) {
+		if (!$selectedGroup || !($selectedGroup.id in trees)) {
 			return console.error("Could not find active group");
 		}
     
     const body: Req.Chat = { 
       messages: [
         SYS_MESSAGE_TEACHER,
-        ...groups[$selectedGroup.id].messages.map(({content, role}) => ({
+        ...trees[$selectedGroup.id].messages.map(({content, role}) => ({
           content,
           role
         })), {
@@ -79,26 +82,27 @@
 			return;
 		}
     treeRoot = new MessageGroupTree(mapRoot);
-		groups = {
+		trees = {
 			[mapRoot.id]: treeRoot
 		};
 		let prevSize = 0;
-		const curSize = () => Object.keys(groups).length;
+		const curSize = () => Object.keys(trees).length;
 		while (curSize() > prevSize) {
 			prevSize = curSize();
 			$allMessageGroups.map((group) => {
-				if (group.parent in groups && !(group.id in groups)) {
-					const tree = new MessageGroupTree(group);
-					groups[group.id] = tree;
-					groups[group.parent].children.push(tree);
+				if (group.parent in trees && !(group.id in trees)) {
+					const tree = new MessageGroupTree(group, trees[group.parent]);
+					trees[group.id] = tree;
+					trees[group.parent].children.push(tree);
 				}
 			});
 		}
 		$allMessages.map((message) => {
-			if (message.groupId && message.groupId in groups) {
-        groups[message.groupId].messages.push(message);
+			if (message.groupId && message.groupId in trees) {
+        trees[message.groupId].messages.push(message);
 			}
 		});
+    console.log(treeRoot);
 	}
 
 	$: {
@@ -112,7 +116,8 @@
     let mousePos = e.latlng;
     // let scale = Math.pow(2, map!.getZoom() + 4);
     let count = 0;
-    for (let tree of Object.values(groups)) {
+    for (let tree of Object.values(trees)) {
+      if ($dragging.id === tree.group.id) continue;
       let marker = tree.marker;
       if (!marker) continue;
       let markerPos = marker.getLatLng();
@@ -135,11 +140,11 @@
       );
 
       if (markerBounds.contains(mousePos)) {
-        count++;
+        $receiving = tree;
+        return;
       }
     }
-    console.log("Mouse over:", count);
-    // Set receiving = el not being dragged and mouse hovered
+    $receiving = null;
   }
 
 	onMount(async () => {
