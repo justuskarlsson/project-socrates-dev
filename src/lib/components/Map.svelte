@@ -30,7 +30,7 @@
 			minZoom,
       maxZoom,
       attributionControl: false,
-      keyboardPanDelta: 150.0
+      keyboardPanDelta: 100.0
 		});
 		context.value = map;
     let bgDummy = document.createElement("div");

@@ -8,6 +8,7 @@
     parent: MessageGroupTree | null;
     children: MessageGroupTree[] = [];
     messages: Message[] = [];
+    level: number = 0;
 
     isLeaf() : boolean {
       return this.children.length === 0;
@@ -18,12 +19,11 @@
 
 <script lang="ts">
 	import { getContext, onDestroy, onMount } from "svelte";
-  import L, { map } from "leaflet"
+  import L from "leaflet"
 	import ChatMessage from "$lib/components/ChatMessage.svelte";
 	import type { MapContext } from "./Map.svelte";
 	import { MessageGroup, type Message } from "$lib/client/stores";
 	import type { Writable } from "svelte/store";
-	import { marked } from "marked";
 
   export let tree: MessageGroupTree;
   export let hide: boolean = false;
@@ -33,6 +33,7 @@
   let y = group.data.y;
   let el: HTMLDivElement;
   let context = getContext<MapContext>("map");
+  const map = context.value as L.Map;
   let marker: L.Marker | null = null;
   let small = false;
   let scale = 1.0;
@@ -40,7 +41,9 @@
   const selectedGroup = getContext<Writable<MessageGroup | null>>("selectedGroup");
   const prompt = getContext<Writable<string>>("prompt");
   const answer = getContext<Writable<string >>("answer");
+  const dragging = getContext<Writable<boolean >>("dragging");
   let isSelected = false;
+  let isHovered = false;
 
   $: isSelected = $selectedGroup?.id === group.id;
 
@@ -62,15 +65,18 @@
       y: p.lat,
       x: p.lng,
     };
+    $dragging = false;
     await MessageGroup.collection.update(group.id, {
       data: pos
     })
   }
 
+  async function onDragStart(e: L.LeafletEvent) {
+    $dragging = true;
+  }
+
   onMount(()=>{
     if (hide) return;
-
-    let map = context.value as L.Map;
     small = map.getZoom() < 0;
     setScale(map.getZoom());
     let divIcon = L.divIcon({
@@ -82,6 +88,7 @@
       draggable: true,
     }).addTo(map)
     marker.addEventListener("click", selectThis);
+    marker.on("dragstart", onDragStart);
     marker.on("dragend", onDragEnd);
     map.addEventListener("zoomanim", onZoom)
   })
@@ -98,7 +105,10 @@
 <div bind:this={el}>
   <div class="min-w-[400px] min-h-[200px] bg-ghost"
       style="transform:scale({scale}); transform-origin: top left;"
-    class:selected={isSelected}
+      class:selected={isSelected}
+      class:receiving={isHovered && !isSelected && $dragging}
+      on:mouseover={()=> {isHovered = true;}}
+      on:mouseout= {()=> {isHovered = false;}}
   >
     {#each tree.children as child}
       <MapMessageGroup tree={child} />
@@ -125,6 +135,10 @@
 	} */
   .selected {
     @apply border-2 border-blue-300;
+  }
+
+  .receiving {
+    @apply border-4 border-blue-400 border-dashed;
   }
 
 </style>

@@ -25,12 +25,14 @@
   let selectedGroup = writable<MessageGroup | null>(null);
   let prompt = writable<string>("");
   let answer = writable<string>("");
+  let dragging = writable<boolean>(false);
     
   let groups: Record<string, MessageGroupTree> = {};
   let treeRoot: MessageGroupTree | null = null;
   setContext("selectedGroup", selectedGroup);
   setContext("prompt", prompt);
   setContext("answer", answer);
+  setContext("dragging", dragging);
 
   async function sendMessage(content: string) {
 		if (!$selectedGroup || !($selectedGroup.id in groups)) {
