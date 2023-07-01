@@ -14,11 +14,11 @@
 	import MapMessageGroup, { MessageGroupTree } from '$lib/components/MapMessageGroup.svelte';
 	import { onMount, setContext } from 'svelte';
 	import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
+  import IoMdRemoveCircleOutline from 'svelte-icons/io/IoMdRemoveCircleOutline.svelte'
 	import { writable } from 'svelte/store';
 	import { fly } from 'svelte/transition';
   import type * as Req from "$lib/request_types"
 	import L from 'leaflet';
-	import { browserLocalPersistence } from 'firebase/auth';
 
 	// Example: https://svelte.dev/repl/62271e8fda854e828f26d75625286bc3?version=4.0.0
 	const mapSize = 50000;
@@ -172,17 +172,27 @@
 			<MapMessageGroup tree={treeRoot} hide={true} />
 		{/if}
 	</Map>
+  <div class="toolbar absolute flex flex-row-reverse top-4 right-4 z-[4000]">
+    <div
+      class="group w-12 h-12 x-icon
+                mx-0 bg-gray-800 text-gray-300"
+      on:click={onAddClick}
+    >
+      <IoIosAddCircleOutline />
+      <span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Add group </span>
+    </div>
+    {#if $selectedGroup}
+    <div
+      class="group w-12 h-12 x-icon
+                mx-0 bg-red-500 text-white"
+      on:click={onAddClick}
+    >
+      <IoMdRemoveCircleOutline />
+      <span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Remove group </span>
+    </div>
+    {/if}
+  </div>
   <div class="ui">
-		<div class=" flex flex-row-reverse top-4 " style="right: 20px;">
-			<div
-				class="group w-12 h-12 x-icon
-								  mx-0 bg-gray-800 text-gray-300"
-				on:click={onAddClick}
-			>
-				<IoIosAddCircleOutline />
-				<span class="x-icon-tooltip group-hover:scale-100 -left-8 -bottom-12"> Add group </span>
-			</div>
-		</div>
     {#if $selectedGroup}
 		<div class="absolute px-6 bottom-6 mx-auto max-w-[720px]"
           in:fly
@@ -196,6 +206,9 @@
 
 
 <style>
+  .toolbar > * {
+    margin-right: 4px;
+  }
   .ui > * {
 		left: 0;
 		right: 0;
