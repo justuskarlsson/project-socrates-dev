@@ -10,9 +10,13 @@
   }
 </script>
 
-<button on:click={show}>
-  Open
-</button>
+<div on:click={show}>
+  <slot>
+    <button >
+      Open
+    </button>
+  </slot>
+</div>
 
 <style>
 

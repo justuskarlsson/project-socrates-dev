@@ -1,18 +1,17 @@
 <script lang="ts">
+	import { Resource } from '$lib/client/stores';
   import * as pdfJs from 'pdfjs-dist';
 	import type {PDFDocumentProxy} from 'pdfjs-dist';
 	import { onMount } from 'svelte';
+
+  export let resource: Resource;
+  export let pageIdx = 12;
+  export let scale = 1.0;
   
-	// If absolute URL from the remote server is provided, configure the CORS
-	// header on that server.
-	var url =
-  'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/examples/learning/helloworld.pdf';
-  
+
 	let canvas: HTMLCanvasElement;
   let pdfContainer: HTMLDivElement;
   let textLayer: HTMLDivElement;
-  let pageIdx = 12;
-  let scale = 1.0;
   let doc: PDFDocumentProxy | null;
 	// The workerSrc property shall be specified.
   // console.log(pdfJs)
@@ -20,19 +19,6 @@
 		'pdfjs-dist/build/pdf.worker.js',
 		import.meta.url
 	).toString();
-	async function loadLocal(file: File) : Promise<PDFDocumentProxy> {
-		// let file = el.files && el.files[0];
-    const buffer = await file.arrayBuffer();
-    return pdfJs.getDocument(buffer).promise;
-	}
-
-  async function onChange(e: Event) {
-    let target = e.target as HTMLInputElement;
-    let file = target.files && target.files[0];
-    if (!file) return;
-    doc = await loadLocal(file);
-    renderPage();
-  }
 
   async function renderPage(){
     if (!doc) return;
@@ -61,7 +47,10 @@
     await textLayerRenderTask.promise;
   }
 
-  onMount(()=>{
+  onMount(async ()=> {
+    const buffer = await Resource.load(resource);
+    doc = await pdfJs.getDocument(buffer).promise;
+    await renderPage();
     document.addEventListener("keydown", async (e) => {
       if (e.key === "ArrowRight") {
         pageIdx = Math.min(pageIdx + 1, doc?.numPages || 1000);
@@ -75,7 +64,6 @@
   })
 
 </script>
-<input type="file" on:change={onChange} />
 <div class="pdfContainer" bind:this={pdfContainer}>
   <canvas bind:this={canvas} />
   <div class="textLayer" bind:this={textLayer}></div>

@@ -5,6 +5,7 @@ import type { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { arrayRemove } from 'firebase/firestore';
 import { idb, initIdb, storage, user, userStore } from './firebase';
 import {
+  getBytes,
   ref, uploadBytes,
   uploadBytesResumable
 } from "firebase/storage";
@@ -185,13 +186,16 @@ export class Resource extends DataItem {
     Object.assign(this, data);
   }
 
+  getStorageRef() {
+    return ref(storage, `${user!.uid}/${this.id}`);
+  }
+
   static async create(courseId: string, file: File) {
     const resource = await Resource.collection.add({
       name: file.name,
       courseId
     })
-    const path = `${user!.uid}/${resource.id}`;
-    const storageRef = ref(storage, path);
+    const storageRef = resource.getStorageRef();
     const buffer = await file.arrayBuffer();
     const localTask = idb.put("files",
       buffer, resource.id);
@@ -210,6 +214,21 @@ export class Resource extends DataItem {
     )
     await uploadPromise;
     await localTask;
+    Resource.all.update((val) => [
+      ...val,
+      resource
+    ])
+    return resource;
+  }
+
+  static async load(resource: Resource) : Promise<ArrayBuffer> {
+    let buffer = await idb.get("files", resource.id) as ArrayBuffer | null;
+    if (!buffer) {
+      const storageRef = resource.getStorageRef();
+      buffer = await getBytes(storageRef);
+      await idb.put('files', buffer, resource.id);
+    }
+    return buffer;
   }
 };
 
