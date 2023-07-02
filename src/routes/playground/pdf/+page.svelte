@@ -22,28 +22,8 @@
 	).toString();
 	async function loadLocal(file: File) : Promise<PDFDocumentProxy> {
 		// let file = el.files && el.files[0];
-		return new Promise((resolve, reject) => {
-		  if (!file) reject();
-
-			var fileReader = new FileReader();
-			fileReader.onload = function () {
-				let result = this.result;
-				var typedarray = new Uint8Array(result as ArrayBuffer);
-
-				const loadingTask = pdfJs.getDocument(typedarray);
-				loadingTask.promise
-					.then((pdf) => {
-						resolve(pdf);
-					})
-					.catch(reject);
-			};
-
-			fileReader.onerror = function (error) {
-				reject(error);
-			};
-
-			fileReader.readAsArrayBuffer(file as File);
-		});
+    const buffer = await file.arrayBuffer();
+    return pdfJs.getDocument(buffer).promise;
 	}
 
   async function onChange(e: Event) {

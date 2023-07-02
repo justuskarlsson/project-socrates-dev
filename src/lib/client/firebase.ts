@@ -1,8 +1,10 @@
 import { writable } from 'svelte/store';
 
 import  { initializeApp,  } from "firebase/app";
-import { getFirestore, getDocs, collection, addDoc, serverTimestamp, type QuerySnapshot, type DocumentData } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
+import { openDB, type IDBPDatabase } from 'idb';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBC7z3ZRT3av1DqpeT7Zqc0KYNbStvPI4A",
@@ -20,6 +22,7 @@ export const app = initializeApp(firebaseConfig);
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 export const userStore = writable<User | null>(null);
 export let user: User | null = null;
@@ -31,3 +34,11 @@ onAuthStateChanged(auth, (firebaseUser)=> {
   loadingAuthState.set(false); 
 });
 
+export let idb: IDBPDatabase;
+export async function initIdb(){
+  idb = await openDB('resources', 1, {
+    upgrade(db) {
+      db.createObjectStore('files');
+    },
+  });
+};
