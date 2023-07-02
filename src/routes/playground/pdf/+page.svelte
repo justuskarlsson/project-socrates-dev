@@ -48,6 +48,7 @@
     let doc = await loadLocal(file);
     let page = await doc.getPage(pageIdx);
   }
+  
 </script>
 <input type="file" on:change={onChange} />
 <canvas bind:this={canvas} />
