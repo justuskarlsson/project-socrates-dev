@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Resource } from '$lib/client/stores';
   import * as pdfJs from 'pdfjs-dist';
-	import type {PDFDocumentProxy, PDFPageProxy, PageViewport} from 'pdfjs-dist';
+	import type {PDFDocumentProxy} from 'pdfjs-dist';
 	import { onMount } from 'svelte';
 
   export let resource: Resource;
@@ -9,8 +9,7 @@
   export let scale = 1.0;
   
   let renderingPage = false;
-	let canvasTop: HTMLCanvasElement;
-	let canvasBottom: HTMLCanvasElement;
+	let canvas: HTMLCanvasElement;
   let pdfContainer: HTMLDivElement;
   let textLayer: HTMLDivElement;
   let doc: PDFDocumentProxy | null;
@@ -21,7 +20,14 @@
 		import.meta.url
 	).toString();
 
-  async function renderHalf(page: PDFPageProxy, viewport: PageViewport, canvas: HTMLCanvasElement) {
+  async function renderPage(){
+    if (!doc) return;
+    if (renderingPage) return;
+    renderingPage = true;
+    let page = await doc.getPage(pageIdx);
+    let viewport = page.getViewport({scale});
+    console.log(viewport)
+    textLayer.style.setProperty('--scale-factor', scale.toString());
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     await page.render({
@@ -30,35 +36,17 @@
     })
     // Prepare to render the text layer
     let textContent = await page.getTextContent();
-    console.log(textContent)
     // Clear the previous text layer
-    // textLayer.style.setProperty('--scale-factor', scale.toString());
-    // textLayer.innerHTML = '';
+    textLayer.innerHTML = '';
 
-    // let textLayerRenderTask = pdfJs.renderTextLayer({
-    //   textContentSource: textContent,
-    //   container: textLayer,
-    //   viewport,
-    //   textDivs: []
-    // });
-    // await textLayerRenderTask.promise;
+    let textLayerRenderTask = pdfJs.renderTextLayer({
+      textContentSource: textContent,
+      container: textLayer,
+      viewport,
+      textDivs: []
+    });
 
-  }
-
-  async function renderPage(){
-    if (!doc) return;
-    if (renderingPage) return;
-    renderingPage = true;
-    let page = await doc.getPage(pageIdx);
-    let viewportTop = page.getViewport({scale});
-    viewportTop.height /= 2;
-    await renderHalf(page, viewportTop, canvasTop);
-
-    let viewportBottom = page.getViewport({scale, offsetY: -viewportTop.height});
-    viewportBottom.height /= 2;
-    await renderHalf(page, viewportBottom, canvasBottom);
-
-
+    await textLayerRenderTask.promise;
     renderingPage = false;
   }
 
@@ -80,10 +68,7 @@
 
 </script>
 <div class="pdfContainer" bind:this={pdfContainer}>
-  <div class="">
-    <canvas class="left-0" bind:this={canvasTop} />
-    <canvas class="right-0" bind:this={canvasBottom} />
-  </div>
+  <canvas class="right-0 mx-auto" bind:this={canvas} />
   <div class="textLayer" bind:this={textLayer}></div>
 </div>
 
@@ -96,7 +81,10 @@
   canvas, .textLayer {
     position: absolute;
     top: 0;
-    /* left: 0; */
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .textLayer {
