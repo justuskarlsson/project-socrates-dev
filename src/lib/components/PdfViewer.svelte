@@ -3,6 +3,8 @@
   import * as pdfJs from 'pdfjs-dist';
 	import type {PDFDocumentProxy} from 'pdfjs-dist';
 	import { onMount } from 'svelte';
+	import ModalEntry from './ModalEntry.svelte';
+	import Form from './Form.svelte';
 
   export let resource: Resource;
   export let pageIdx = 30;
@@ -34,9 +36,9 @@
       canvasContext: canvas.getContext("2d")!,
       viewport
     })
-    // Prepare to render the text layer
     let textContent = await page.getTextContent();
-    // Clear the previous text layer
+    let content = textContent.items.map((x: any) => x.str || "").join(" ");
+    console.log(content)
     textLayer.innerHTML = '';
 
     let textLayerRenderTask = pdfJs.renderTextLayer({
@@ -67,17 +69,26 @@
   })
 
 </script>
-<div class="pdfContainer" bind:this={pdfContainer}>
+<div class="relative" bind:this={pdfContainer}>
   <canvas class="right-0 mx-auto" bind:this={canvas} />
   <div class="textLayer" bind:this={textLayer}></div>
+  <div class="absolute right-2 top-2 flex flex-col space-y-1">
+    <ModalEntry Component={Form} 
+                modal={{type: "modal"}}
+                inputs={[
+                  {name: "bla"}
+                ]}
+                >
+      <button class="w-12 h-12 bg-blue-400">
+        E
+      </button>
+    </ModalEntry>
+    <div class="w-12 h-12 bg-blue-400"></div>
+  </div>
 </div>
 
 
 <style>
-  .pdfContainer {
-    position: relative;
-  }
-
   canvas, .textLayer {
     position: absolute;
     top: 0;
@@ -101,7 +112,7 @@
   }
 
   :global(.textLayer > *) {
-    pointer-events: visibleStroke;
+    pointer-events: fill;
     color: transparent;
     position: absolute;
     white-space: pre;

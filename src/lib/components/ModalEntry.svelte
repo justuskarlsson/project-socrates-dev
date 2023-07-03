@@ -1,14 +1,12 @@
 <script lang="ts">
 	import type { SvelteComponent } from "svelte";
-	import { modalComponent, modalProps, modalViewProps, type ModalViewProps } from "./ModalView.svelte";
+	import { showModal, type ModalViewProps } from "./ModalView.svelte";
 
   export let Component: typeof SvelteComponent;
   export let modal: ModalViewProps = {};
 
   function show(){
-    $modalComponent = Component;
-    $modalProps = $$restProps;
-    $modalViewProps = modal;
+    showModal(Component, $$restProps, modal);
   }
 </script>
 
