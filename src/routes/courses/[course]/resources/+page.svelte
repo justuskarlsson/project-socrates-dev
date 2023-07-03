@@ -20,7 +20,7 @@
   <ul>
     {#each $allResources as resource}
       <li>
-        <ModalEntry Component={PdfViewer} {resource} >
+        <ModalEntry Component={PdfViewer} {resource} scale={1.5} >
           <button>
             {resource.name}
           </button>

@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 
   export let resource: Resource;
-  export let pageIdx = 12;
+  export let pageIdx = 30;
   export let scale = 1.0;
   
 

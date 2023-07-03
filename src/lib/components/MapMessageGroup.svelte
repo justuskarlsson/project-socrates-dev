@@ -156,7 +156,7 @@
 
 
 
-<style>
+<style lang="postcss">
 	/* :global(.map-marker) {
 		width:30px;
 		transform:translateX(-50%) translateY(-25%);

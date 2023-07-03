@@ -15,7 +15,7 @@
 
 </script>
 {#if $modalComponent}
-  <div class="absolute w-screen h-screen
+  <div class="modal-background absolute w-full h-full
              bg-gray-500 bg-opacity-50 
              flex justify-center cursor-pointer"
     on:click={closeModal}
@@ -30,6 +30,6 @@
     </div>
   </div>
 {/if}
-<style>
+<style lang="postcss">
 
 </style>
