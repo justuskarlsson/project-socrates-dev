@@ -5,6 +5,8 @@
 	import { onMount } from 'svelte';
 	import ModalEntry from './ModalEntry.svelte';
 	import Form from './Form.svelte';
+	import PdfDocument from './PdfDocument.svelte';
+	import PdfPage from './PdfPage.svelte';
 
   export let resource: Resource;
   export let pageIdx = 30;
@@ -81,6 +83,9 @@
 <div class="relative h-full w-full bg-slate-200" bind:this={pdfContainer}>
   <canvas class="right-0 mx-auto" bind:this={canvas} />
   <div class="textLayer" bind:this={textLayer}></div>
+  <PdfDocument data={resource}>
+    <PdfPage />
+  </PdfDocument>
   <div class="absolute right-2 top-2 flex flex-col space-y-1">
     <ModalEntry Component={Form} 
                 modal={{type: "modal"}}
