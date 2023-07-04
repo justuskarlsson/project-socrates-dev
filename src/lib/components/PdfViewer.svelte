@@ -8,7 +8,7 @@
 
   export let resource: Resource;
   export let pageIdx = 30;
-  export let scale = 1.0;
+  export let scale: "fit" | number = "fit";
   
   let renderingPage = false;
 	let canvas: HTMLCanvasElement;
@@ -27,9 +27,18 @@
     if (renderingPage) return;
     renderingPage = true;
     let page = await doc.getPage(pageIdx);
-    let viewport = page.getViewport({scale});
-    console.log(viewport)
-    textLayer.style.setProperty('--scale-factor', scale.toString());
+    let viewport;
+    let scaleUsed: number;
+    if (scale === "fit") {
+      viewport = page.getViewport({scale: 1.0});
+      scaleUsed = pdfContainer.clientHeight / viewport.height;
+      console.log(scaleUsed, scaleUsed.toString());
+      viewport = page.getViewport({scale: scaleUsed});
+    } else {
+      viewport = page.getViewport({scale});
+      scaleUsed = scale;
+    }
+    textLayer.style.setProperty('--scale-factor', scaleUsed.toString());
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     await page.render({
@@ -38,7 +47,7 @@
     })
     let textContent = await page.getTextContent();
     let content = textContent.items.map((x: any) => x.str || "").join(" ");
-    console.log(content)
+    // console.log(content)
     textLayer.innerHTML = '';
 
     let textLayerRenderTask = pdfJs.renderTextLayer({
@@ -69,7 +78,7 @@
   })
 
 </script>
-<div class="relative" bind:this={pdfContainer}>
+<div class="relative h-full w-full bg-slate-200" bind:this={pdfContainer}>
   <canvas class="right-0 mx-auto" bind:this={canvas} />
   <div class="textLayer" bind:this={textLayer}></div>
   <div class="absolute right-2 top-2 flex flex-col space-y-1">

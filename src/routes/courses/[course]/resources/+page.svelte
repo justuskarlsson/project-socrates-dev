@@ -18,7 +18,7 @@
   <ul>
     {#each $allResources as resource}
       <li>
-        <ModalEntry Component={PdfViewer} {resource} scale={1.5} modal={{size: "full"}} >
+        <ModalEntry Component={PdfViewer} {resource} modal={{size: "full"}} >
           <button>
             {resource.name}
           </button>
