@@ -7,9 +7,11 @@
   class Input<T> {
     label: string;
     value: T;
+    initialValue: T;
     constructor(label: string, value: T) {
       this.label = label;
       this.value = value;
+      this.initialValue = value;
     }
     onChange(event: Event) {
 
@@ -37,33 +39,46 @@
       this.inputs = inputs;
       this.onSubmit = onSubmit;
     }
+
+    reset(){
+      Object.values(this.inputs).map((inp) => {
+        inp.value = inp.initialValue;
+      })
+    }
   };
 </script>
 
 <script lang="ts">
-	import { closeModal } from "./ModalView.svelte";
+	import LoadingSpinner from "./LoadingSpinner.svelte";
+import { closeModal } from "./ModalView.svelte";
 
   export let data: FormData;
-  function onSubmit(){
+  let submitting = false;
+  async function onSubmit(){
+    submitting = true;
     let values: Record<string, any> = {};
     Object.entries(data.inputs).map(([key, input]) => {
       values[key] = input.value;
     })
-    data.onSubmit(values);
+    await data.onSubmit(values);
+    data.reset();
     closeModal();
+    submitting = false;
   }
 </script>
 
 
-<div class="w-full h-full bg-white flex flex-col p-4 space-y-2">
+<div class="w-full h-full bg-white flex flex-col p-4 space-y-2 items-center">
+  {#if submitting}
+    <LoadingSpinner />
+  {:else}
   {#each Object.values(data.inputs) as input}
-    <div>
+    <div class="w-full">
       {#if input instanceof SelectInput}
         <label class="label">
-          <span class="label-text">{input.label}:</span>
+          <span class="label-text">{input.label}</span>
         </label>
-        <select class="select select-bordered
-                       w-full max-w-xs"
+        <select class="select select-bordered w-full"
                 bind:value={input.value}
           >
           {#each input.options as option}
@@ -74,7 +89,7 @@
         </select>
       {:else}
          <label class="label">
-           <span class="label-text">{input.label}:</span>
+           <span class="label-text">{input.label}</span>
          </label>
          <input type="text" placeholder="Type here" 
                 class="input input-bordered"
@@ -83,9 +98,11 @@
       {/if}
     </div>
   {/each}
-  <button class="btn" on:click={onSubmit}>
+  <button class="btn w-full" on:click={onSubmit}>
     Submit
   </button>
+  {/if}
+
 </div>
 
 

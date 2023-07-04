@@ -24,8 +24,6 @@
   })
 
   const embeddingForm = new FormData({
-    first: new TextInput("First Name"),
-    last: new TextInput("Last Name"),
     frequency: new SelectInput("Frequency of embeddings:", [
       {label: "Every page", value: "page"},
       {label: "Every sentence", value: "sentence"}
@@ -33,7 +31,20 @@
   }, submitEmbedding);
 
   async function submitEmbedding(values: Record<string, any>){
-    console.log(values)
+    let promises: Promise<string>[] = [];
+    for (let i = 1; i < doc.numPages; i++) {
+      promises.push(new Promise(
+        async (resolve, reject) => {
+          let page = await doc.getPage(i);
+          let content = await page.getTextContent()
+          let text = content.items.map((x: any) => x.str || "").join(" ");
+          resolve(text);
+        }
+      ))
+    }
+    let textPages = await Promise.all(promises);
+    console.log(textPages[55].slice(0, 20));
+    console.log(textPages[56].slice(0, 20));
   }
 
   onMount(async ()=> {
