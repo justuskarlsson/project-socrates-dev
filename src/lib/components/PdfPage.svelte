@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as pdfJs from 'pdfjs-dist';
+  import * as pdfJSViewer from 'pdfjs-dist/web/pdf_viewer.js'
 	import type { PDFDocumentProxy } from "pdfjs-dist";
 	import { afterUpdate, getContext, onMount } from "svelte";
 
@@ -13,11 +13,14 @@
   let renderingPage = false;
 
   let doc = getContext<PDFDocumentProxy>("doc");
+  const eventBus = new pdfJSViewer.EventBus();
+
   afterUpdate(async ()=>{
     await renderPage();
 
   })
   async function renderPage(){
+    console.log("Rendering Page", index);
     if (!doc) return;
     if (renderingPage) return;
     renderingPage = true;
@@ -27,72 +30,33 @@
     if (scale === "fit") {
       viewport = page.getViewport({scale: 1.0});
       scaleUsed = pdfContainer.clientHeight / viewport.height;
+      console.log(viewport, pdfContainer.clientHeight);
       viewport = page.getViewport({scale: scaleUsed});
     } else {
       viewport = page.getViewport({scale});
       scaleUsed = scale;
     }
-    textLayer.style.setProperty('--scale-factor', scaleUsed.toString());
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    await page.render({
-      canvasContext: canvas.getContext("2d")!,
-      viewport
+    pdfContainer.innerHTML = "";
+    const pageView = new pdfJSViewer.PDFPageView({
+      container: pdfContainer,
+      id: index,
+      defaultViewport: viewport,
+      scale: 1 / scaleUsed - 0.03,
+      eventBus
     })
-    // // The tree TOC
-    // let a = await doc.getOutline();
-    let textContent = await page.getTextContent();
-    textLayer.innerHTML = '';
-
-    let textLayerRenderTask = pdfJs.renderTextLayer({
-      textContentSource: textContent,
-      container: textLayer,
-      viewport,
-      textDivs: []
-    });
-
-    await textLayerRenderTask.promise;
+    pageView.setPdfPage(page);
+    await pageView.draw();
     renderingPage = false;
   }
 
 </script>
 
-<div class="relative h-full w-full bg-slate-200" bind:this={pdfContainer}>
-  <canvas class="right-0 mx-auto" bind:this={canvas} />
-  <div class="textLayer" bind:this={textLayer}></div>
+<div class="pdfViewer singlePageView relative
+            h-full w-full p-0  bg-slate-200"
+            style="margin: inherit; overflow-scroll; display:block;" 
+          bind:this={pdfContainer}
+
+>
 </div>
 
 
-<style>
-  canvas, .textLayer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .textLayer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    opacity: 0.8;
-    line-height: 1.0;
-    pointer-events: none;
-
-  }
-
-  :global(.textLayer > *) {
-    pointer-events: fill;
-    color: transparent;
-    position: absolute;
-    white-space: pre;
-    cursor: text;
-    transform-origin: 0% 0%;
-  }
-
-</style>
