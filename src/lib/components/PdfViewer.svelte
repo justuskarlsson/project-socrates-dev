@@ -8,6 +8,7 @@
 	import PdfPage from './PdfPage.svelte';
 	import LoadingSpinner from './LoadingSpinner.svelte';
 	import Context from './Context.svelte';
+	import Icon from './Icon.svelte';
 
   export let resource: Resource;
   
@@ -102,9 +103,7 @@
                   modal={{type: "modal"}}
                   data={embeddingForm}
                   >
-        <button class="w-12 h-12 bg-blue-400">
-          E
-        </button>
+        <Icon icon="upload" tooltip="Create embeddings" class="w-12 h-12 bg-blue-400"/>
       </ModalEntry>
       <div class="w-12 h-12 bg-blue-400">
 
