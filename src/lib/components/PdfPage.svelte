@@ -39,9 +39,11 @@
       canvasContext: canvas.getContext("2d")!,
       viewport
     })
+    // // The tree TOC
+    // let a = await doc.getOutline();
+    let a = await doc.getPageLabels();
+    console.log(a);
     let textContent = await page.getTextContent();
-    let content = textContent.items.map((x: any) => x.str || "").join(" ");
-    // console.log(content)
     textLayer.innerHTML = '';
 
     let textLayerRenderTask = pdfJs.renderTextLayer({

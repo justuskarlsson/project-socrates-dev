@@ -73,7 +73,7 @@ import { closeModal } from "./ModalView.svelte";
     <LoadingSpinner />
   {:else}
   {#each Object.values(data.inputs) as input}
-    <div class="w-full">
+    <div class="w-full max-w-xs">
       {#if input instanceof SelectInput}
         <label class="label">
           <span class="label-text">{input.label}</span>
@@ -98,7 +98,7 @@ import { closeModal } from "./ModalView.svelte";
       {/if}
     </div>
   {/each}
-  <button class="btn w-full" on:click={onSubmit}>
+  <button class="btn w-full max-w-xs" on:click={onSubmit}>
     Submit
   </button>
   {/if}

@@ -15,11 +15,14 @@
   let doc: PDFDocumentProxy;
   let pageIdx = 1;
   let doubleSided = false;
+  let pageLabels: string[] | null = null;
 
 
   const loadPromise = new Promise<PDFDocumentProxy>(async (resolve, reject) => {
     let buffer: ArrayBuffer = await Resource.load(resource);
     doc = await pdfJs.getDocument(buffer).promise;
+    pageLabels = await doc.getPageLabels();
+    decideDoubleSided()
     resolve(doc);
   })
 
@@ -49,32 +52,48 @@
 
   onMount(async ()=> {
     document.addEventListener("keydown", async (e) => {
+      let inc = doubleSided ? 2 : 1;
       if (e.key === "ArrowRight") {
-        pageIdx = Math.min(pageIdx + 1, doc?.numPages || 1000);
+        pageIdx = Math.min(pageIdx + inc, doc?.numPages || 1000);
       }
       else if(e.key === "ArrowLeft") {
-        pageIdx = Math.max(pageIdx - 1, 0);
+        pageIdx = Math.max(pageIdx - inc, 0);
       }
     })
   })
 
-  function useDoubleSided(){
+  function decideDoubleSided(){
     let ratio = root.clientWidth / root.clientHeight;
     doubleSided = ratio > 1.42;
     return doubleSided;
   }
 
+  function doubleSidedIndex(idxOne: number, right = false) {
+    const getSide = (idx: number) => right ? idx + 1 : idx;
+    if (!pageLabels || pageIdx === 1) return getSide(idxOne);
+
+    let realPage = Number.parseInt(pageLabels[idxOne - 1]);
+    if (Number.isNaN(realPage)) return getSide(pageIdx);
+    let leftSide = realPage % 2 === 0 ? pageIdx : pageIdx - 1
+    return getSide(leftSide);
+
+    
+  }
+
 </script>
-
-
-<div class="relative h-full w-full bg-slate-200" bind:this={root}>
+<svelte:window on:resize={decideDoubleSided} />
+<div class="relative h-full w-full bg-slate-200 flex flex-row" bind:this={root}>
   {#await loadPromise}
     <LoadingSpinner />
   {:then doc}
   <Context doc={doc} >
-    {#if useDoubleSided()}
-      <PdfPage index={pageIdx}/>
-      <PdfPage index={pageIdx + 1}/>
+    {#if doubleSided}
+      <div class="w-1/2">
+        <PdfPage index={doubleSidedIndex(pageIdx)}/>
+      </div>
+      <div class="w-1/2">
+        <PdfPage index={doubleSidedIndex(pageIdx, true)}/>
+      </div>
     {:else}
       <PdfPage index={pageIdx}/>
     {/if}
