@@ -15,7 +15,7 @@
   
   let root: HTMLDivElement;
   let doc: PDFDocumentProxy;
-  let pageIdx = 1;
+  let pageIdx = resource.currentPageIdx;
   let doubleSided = false;
   let pageLabels: string[] | null = null;
 
@@ -64,6 +64,12 @@
       else if(e.key === "ArrowLeft") {
         pageIdx = Math.max(pageIdx - inc, 0);
       }
+      else {
+        return;
+      }
+      Resource.collection.update(resource.id, {
+        currentPageIdx: pageIdx
+      })
     })
   })
 

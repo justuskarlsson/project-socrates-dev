@@ -203,6 +203,7 @@ export class Embedding extends DataItem {
 export class Resource extends DataItem {
   name: string;
   courseId: string;
+  currentPageIdx: number = 1;
 
   static collection = new Collection<Resource>("resources",
     (data: any) => new Resource(data));

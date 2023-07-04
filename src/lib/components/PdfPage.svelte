@@ -41,8 +41,6 @@
     })
     // // The tree TOC
     // let a = await doc.getOutline();
-    let a = await doc.getPageLabels();
-    console.log(a);
     let textContent = await page.getTextContent();
     textLayer.innerHTML = '';
 
