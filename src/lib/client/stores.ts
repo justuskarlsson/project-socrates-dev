@@ -160,8 +160,12 @@ export class Message extends DataItem {
 };
 
 export class Embedding extends DataItem {
-  messageId: string;
+  ref: string;
+  ref_type: "message" | "resource";
+  data: any;
   embedding: number[];
+  
+  static all = writable<Embedding[]>([]);
 
   static collection = new Collection<Embedding>("embeddings",
     (data: any) => new Embedding(data));
@@ -170,6 +174,30 @@ export class Embedding extends DataItem {
     super();
     Object.assign(this, data);
   }
+
+  static async createRaw(text: string) {
+    const res = await fetch("/api/embedding", {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({input: text})
+    });
+    const json = await res.json();
+    const embedding = json["embedding"] as number[];
+    return new Embedding({embedding});
+  }
+
+  static async fromPage(resourceId: string, text: string, page_idx: number) {
+    const embedding = await Embedding.createRaw(text);
+    embedding.ref_type = "resource";
+    embedding.ref = resourceId;
+    embedding.data = {
+      page_idx,
+    }
+    return embedding;
+  }
+
 };
 
 export class Resource extends DataItem {
@@ -250,7 +278,7 @@ export const allMessages: Writable<Message[]> = writable([]);
 export const curMessages: Writable<Message[]> = writable([]);
 
 export const allMessageGroups: Writable<MessageGroup[]> = writable([]);
-export const allEmbeddings: Writable<Embedding[]> = writable([]);
+export const allEmbeddings = Embedding.all;
 export const allResources = Resource.all;
 
 export async function loadAll() {

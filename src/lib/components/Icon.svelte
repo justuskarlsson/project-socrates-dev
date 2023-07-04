@@ -2,8 +2,9 @@
   import IoIosAddCircleOutline from 'svelte-icons/io/IoIosAddCircleOutline.svelte';
   import IoMdRemoveCircleOutline from 'svelte-icons/io/IoMdRemoveCircleOutline.svelte'
   import IoIosCloudUpload from 'svelte-icons/io/IoIosCloudUpload.svelte'
-
-  type IconId = "add" | "remove" | "upload";
+  import IoIosSearch from 'svelte-icons/io/IoIosSearch.svelte'
+  
+  type IconId = "add" | "remove" | "upload" | "search";
 
   export let icon: IconId;
   export let tooltip: string = "";
@@ -15,6 +16,7 @@
       case "add": return IoIosAddCircleOutline;
       case "remove": return IoMdRemoveCircleOutline;
       case "upload": return IoIosCloudUpload;
+      case "search": return IoIosSearch;
     }
   }
 
@@ -22,7 +24,7 @@
 
 <div
   class="group w-12 h-12 x-icon
-          mx-0 bg-red-500 text-white {$$props.class}"
+          mx-0 bg-gray-600 text-white {$$props.class}"
   on:click={onClick}
 >
   <svelte:component this={getIconComponent(icon)}/>

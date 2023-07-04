@@ -27,7 +27,6 @@
       'Content-Type': 'application/json'
       },
       body: JSON.stringify({input})
-
     });
     const json = await res.json();
     let inputEmbedding = tf.tensor(json["embedding"]) as tf.Tensor1D;
@@ -40,7 +39,7 @@
     for (let i = 0; i < numMatches && i < distances.length; i++) {
       let [dist, idx] = distancesAndIdx[i];
       console.log(dist);
-      matches.push(messagesById[$allEmbeddings[idx].messageId]);
+      matches.push(messagesById[$allEmbeddings[idx].ref]);
     }
     matches = matches;
     inputEmbedding.dispose();

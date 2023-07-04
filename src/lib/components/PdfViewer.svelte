@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Resource } from '$lib/client/stores';
+	import { Embedding, Resource, allEmbeddings } from '$lib/client/stores';
   import * as pdfJs from 'pdfjs-dist';
 	import type {PDFDocumentProxy} from 'pdfjs-dist';
 	import { onMount } from 'svelte';
@@ -9,6 +9,7 @@
 	import LoadingSpinner from './LoadingSpinner.svelte';
 	import Context from './Context.svelte';
 	import Icon from './Icon.svelte';
+	import PdfSearch from './PdfSearch.svelte';
 
   export let resource: Resource;
   
@@ -17,7 +18,6 @@
   let pageIdx = 1;
   let doubleSided = false;
   let pageLabels: string[] | null = null;
-
 
   const loadPromise = new Promise<PDFDocumentProxy>(async (resolve, reject) => {
     let buffer: ArrayBuffer = await Resource.load(resource);
@@ -35,20 +35,24 @@
   }, submitEmbedding);
 
   async function submitEmbedding(values: Record<string, any>){
-    let promises: Promise<string>[] = [];
-    for (let i = 1; i < doc.numPages; i++) {
+    let promises: Promise<Embedding>[] = [];
+    let start = 44;
+    let end = start + 4;
+    for (let i = start; i < end; i++) {
       promises.push(new Promise(
         async (resolve, reject) => {
           let page = await doc.getPage(i);
           let content = await page.getTextContent()
           let text = content.items.map((x: any) => x.str || "").join(" ");
-          resolve(text);
+          let embedding = await Embedding.fromPage(
+            resource.id, text, i);
+          embedding = await Embedding.collection.add(embedding);
+          resolve(embedding);
         }
       ))
     }
-    let textPages = await Promise.all(promises);
-    console.log(textPages[55].slice(0, 20));
-    console.log(textPages[56].slice(0, 20));
+    let embeddings = await Promise.all(promises);
+    $allEmbeddings = [...$allEmbeddings, ...embeddings];
   }
 
   onMount(async ()=> {
@@ -103,11 +107,15 @@
                   modal={{type: "modal"}}
                   data={embeddingForm}
                   >
-        <Icon icon="upload" tooltip="Create embeddings" class="w-12 h-12 bg-blue-400"/>
+        <Icon icon="upload" tooltip="Create embeddings" class="w-12 h-12 text-yellow-400"/>
       </ModalEntry>
-      <div class="w-12 h-12 bg-blue-400">
-
-      </div>
+      <ModalEntry 
+          Component={PdfSearch} 
+          modal={{type: "popup"}}
+          {resource}
+        >
+        <Icon icon="search" tooltip="Semantic search" class="w-12 h-12 text-yellow-400"/>
+      </ModalEntry>
     </div>
   </Context>
   {/await} 
