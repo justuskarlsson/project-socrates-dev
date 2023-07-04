@@ -18,9 +18,6 @@
 		'pdfjs-dist/build/pdf.worker.js',
 		import.meta.url
 	).toString();
-  type DocContext = {value: PDFDocumentProxy | null};
-  const docContext: DocContext = {value: null};
-  // setContext("doc", docContext);
 
   const loadPromise = new Promise<PDFDocumentProxy>(async (resolve, reject) => {
     let buffer: ArrayBuffer;
