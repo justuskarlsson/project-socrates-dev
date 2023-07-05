@@ -11,7 +11,6 @@ class Collection {
 }
 
 export async function getEmbedding(input: string): Promise<number[]> {
-  console.log(input)
   const response = await openai.createEmbedding({
     model: "text-embedding-ada-002",
     input

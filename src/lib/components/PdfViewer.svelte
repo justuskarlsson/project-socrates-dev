@@ -36,10 +36,11 @@
   }, submitEmbedding);
 
   async function submitEmbedding(values: Record<string, any>){
-    let promises: Promise<Embedding>[] = [];
     // let start = 24;
     // let end = start + 8;
+    console.log("Deleting old embeddings...")
     await Embedding.collection.deleteMany("ref", "==", resource.id);
+    let promises: Promise<Embedding>[] = [];
     for (let i = 1; i < doc.numPages + 1; i++) {
       promises.push(new Promise(
         async (resolve, reject) => {
@@ -47,12 +48,15 @@
           let text = await Resource.pageToText(page);
           let embedding = await Embedding.fromPage(
             resource.id, text, i);
-          embedding = await Embedding.collection.add(embedding);
           resolve(embedding);
         }
       ))
     }
-    await Promise.all(promises);
+    console.log("Creating new embeddings");
+    let embeddings = await Promise.all(promises);
+    console.log("Adding new embeddings to db..");
+    embeddings = await Embedding.collection.addMany(embeddings);
+    console.log("Fetching new embeddings..");
     await Embedding.collection.fetch(allEmbeddings);
   }
 

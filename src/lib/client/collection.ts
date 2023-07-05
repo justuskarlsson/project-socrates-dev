@@ -74,7 +74,8 @@ export class Collection<T extends DataItem> {
     return this.mapSnapshot(snapshot);
   }
 
-  addHelper(input: T | Partial<T>) {
+
+  private addHelper(input: T | Partial<T>) {
     let data = input instanceof DataItem ? input : this.factory(input);
     data.user = user!.uid;
     const docRef = doc(this.collection);
@@ -83,6 +84,14 @@ export class Collection<T extends DataItem> {
       ref: docRef,
       data: data as T
     };
+  }
+
+  private chunkArray<T>(array: T[], chunkSize: number): T[][] {
+    let result = [];
+    for (let i = 0; i < array.length; i += chunkSize) {
+        result.push(array.slice(i, i + chunkSize));
+    }
+    return result;
   }
 
   async add(input: T | Partial<T>): Promise<T> {
@@ -94,41 +103,53 @@ export class Collection<T extends DataItem> {
     return data;
   }
 
-  async addMany(inputs: (T | Partial<T>) []) {
 
-    const batch = writeBatch(db);
-    let items: T[] = [];
-    for (let inp of inputs) {
-      let {ref, data} = this.addHelper(inp);
-      items.push(data);
-      batch.set(ref, {
-        ...data,
-        timestamp: serverTimestamp(),
-      });
+  async addMany(inputs: (T | Partial<T>) []) {
+    const chunks = this.chunkArray(inputs, 500);
+    const items: T[] = [];
+    const promises: Promise<void>[] = [];
+    for (let chunk of chunks) {
+        const batch = writeBatch(db);
+        for (let inp of chunk) {
+            let {ref, data} = this.addHelper(inp);
+            items.push(data);
+            batch.set(ref, {
+                ...data,
+                timestamp: serverTimestamp(),
+            });
+        }
+        promises.push(batch.commit());
     }
-    await batch.commit();
+    await Promise.allSettled(promises);
     return items;
-  }
+}
 
 
   async update(id: string, data: Partial<T>) {
-    let ref = doc(db, this.path, id) as DocumentReference<T>;
+    let ref = doc(this.collection, id) as DocumentReference<T>;
     await updateDoc(ref, data as UpdateData<T>);
   }
 
-  // async delete(){
-    
-  // }
+  async delete(id: string){
+    let ref = doc(this.collection, id) as DocumentReference<T>;
+    await deleteDoc(ref);
+  }
+
   async deleteMany<K extends keyof T>(fieldPath: K, opStr: WhereFilterOp, value: T[K]) {
     const q = query(this.collection, 
-      where("user", "==", user!.uid),
-      where(fieldPath as string | FieldPath, opStr, value),
+        where("user", "==", user!.uid),
+        where(fieldPath as string | FieldPath, opStr, value),
     );
     const snapshot = await getDocs(q);
-    const batch = writeBatch(db);
-    snapshot.forEach((doc) => {
-      batch.delete(doc.ref);
-    })
-    return batch.commit();
-  }
+    const chunks = this.chunkArray(snapshot.docs, 500);
+    const promises: Promise<void>[] = [];
+    for (let chunk of chunks) {
+        const batch = writeBatch(db);
+        chunk.forEach((doc) => {
+            batch.delete(doc.ref);
+        });
+        promises.push(batch.commit());
+    }
+    await Promise.allSettled(promises);
+}
 };
