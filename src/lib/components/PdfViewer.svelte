@@ -42,8 +42,7 @@
       promises.push(new Promise(
         async (resolve, reject) => {
           let page = await doc.getPage(i);
-          let content = await page.getTextContent()
-          let text = content.items.map((x: any) => x.str || "").join(" ");
+          let text = await Resource.pageToText(page);
           let embedding = await Embedding.fromPage(
             resource.id, text, i);
           embedding = await Embedding.collection.add(embedding);
@@ -118,7 +117,7 @@
       <ModalEntry 
           Component={PdfSearch} 
           modal={{type: "popup"}}
-          {resource}
+          {resource} {doc}
         >
         <Icon icon="search" tooltip="Semantic search" class="w-12 h-12 text-yellow-400"/>
       </ModalEntry>

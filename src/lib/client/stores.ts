@@ -9,6 +9,7 @@ import {
   ref, uploadBytes,
   uploadBytesResumable
 } from "firebase/storage";
+import type { PDFPageProxy } from 'pdfjs-dist';
 
 
 export class Course extends DataItem {
@@ -219,6 +220,11 @@ export class Resource extends DataItem {
     return ref(storage, `${user!.uid}/${this.id}`);
   }
 
+  static async pageToText(page: PDFPageProxy){
+    let content = await page.getTextContent()
+    let text = content.items.map((x: any) => x.str || "").join(" ");
+    return text;
+  }
   static async create(courseId: string, file: File) {
     const resource = await Resource.collection.add({
       name: file.name,
