@@ -2,7 +2,10 @@
 
   export let visible: boolean = false; 
 
+  let hasBeenVisible = false;
+
   function toggleVisible(){
+    hasBeenVisible = true;
     visible = !visible;
   }
 
@@ -13,6 +16,8 @@
     <button>open</button>
   </slot>
 </div>
-{#if visible}
-   <slot />
+{#if visible || hasBeenVisible}
+  <div class:hidden={!visible}>
+    <slot />
+  </div> 
 {/if}
