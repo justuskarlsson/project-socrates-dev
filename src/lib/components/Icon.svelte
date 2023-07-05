@@ -24,12 +24,12 @@
 
 <div
   class="group w-12 h-12 x-icon
-          mx-0 bg-gray-600 text-white {$$props.class}"
+          mx-0 bg-gray-600 text-white {$$props.class || ""}"
   on:click={onClick}
 >
   <svelte:component this={getIconComponent(icon)}/>
   {#if tooltip}
-    <span class="icon-tooltip group-hover:scale-100 "
+    <span class="icon-tooltip group-hover:scale-100 z-[1000]"
           style="{float === "left" ? "left: -12px" : "right: 12px;"}"
     >
       {tooltip} 
@@ -60,6 +60,7 @@
     @apply absolute w-auto p-2 m-2 min-w-max 
     rounded-md shadow-md text-white bg-gray-900 
     text-xs font-bold transition-all duration-100
+    select-none
     origin-center scale-0; /* group-hover: scale-100 */ 
   }
 </style>

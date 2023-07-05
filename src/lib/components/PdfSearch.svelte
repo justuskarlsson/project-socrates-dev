@@ -1,20 +1,29 @@
+<script lang="ts" context="module">
+  export interface SearchResult {
+    preview: string;
+    pageIdx: number;
+    pageLabel: string;
+    distance: number;
+  };
+</script>
+
 <script lang="ts">
 	import { Embedding, Resource, allEmbeddings } from "$lib/client/stores";
 	import type { PDFDocumentProxy } from "pdfjs-dist";
 	import { getContext } from "svelte";
   import * as tf from '@tensorflow/tfjs';
 	import { euclideanDists } from "$lib/client/compute";
+  
+
 
   export let resource: Resource;
-  export let doc: PDFDocumentProxy;
+  // export let doc: PDFDocumentProxy;
   export let k: number = 5;
   export let previewLength: number = 800;
+  export let pageLabels: string[] | null = null;
+  export let onSelect: (item: SearchResult) => void = () => {};
 
-  interface SearchResult {
-    preview: string;
-    pageIdx: number;
-    distance: number;
-  };
+
   let searchResults: SearchResult[] = [];
 
   let docEmbeddings: Embedding[] = [];
@@ -22,7 +31,7 @@
   let refEmbeddings: tf.Tensor2D;
 
   // Works when popup
-  // let doc = getContext<PDFDocumentProxy>("doc");
+  let doc = getContext<PDFDocumentProxy>("doc");
 
   $: {
     docEmbeddings = $allEmbeddings.filter((emb) => (
@@ -50,10 +59,15 @@
       promises.push(new Promise(async (resolve, reject) => {
         let page = await doc.getPage(pageIdx);
         let text = await Resource.pageToText(page);
+        let pageLabel = pageIdx.toString();
+        if (pageLabels) {
+          pageLabel = pageLabels[pageIdx - 1];
+        }
         resolve({
           preview: text.slice(0, previewLength),
           pageIdx,
           distance,
+          pageLabel
         })
       }))
     }
@@ -72,14 +86,18 @@
 
 <div class="flex flex-col p-4 space-y-2">
   <input on:keydown={maybeSearch}
+        autofocus
         bind:value={searchPhrase}
         class="input input-bordered" 
         placeholder="Search.." />
   {#each searchResults as result}
-     <div class="w-full flex flex-row border-2 border-gray-300 rounded-md p-2 space-x-4">
+     <div class="w-full flex flex-row border-2  rounded-md p-2 space-x-4
+                 bg-gray-300 border-gray-200 select-none cursor-pointer"
+                on:click={() => onSelect(result)}
+                 >
         <div class="flex flex-col">
           <div>
-            {result.pageIdx}
+            {result.pageLabel}
           </div>
           <div>
             {result.distance.toFixed(3)}

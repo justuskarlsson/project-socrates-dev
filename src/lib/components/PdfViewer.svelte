@@ -10,6 +10,7 @@
 	import Context from './Context.svelte';
 	import Icon from './Icon.svelte';
 	import PdfSearch from './PdfSearch.svelte';
+	import Popup from './Popup.svelte';
 
   export let resource: Resource;
   
@@ -36,9 +37,10 @@
 
   async function submitEmbedding(values: Record<string, any>){
     let promises: Promise<Embedding>[] = [];
-    let start = 44;
-    let end = start + 4;
-    for (let i = start; i < end; i++) {
+    // let start = 24;
+    // let end = start + 8;
+    await Embedding.collection.deleteMany("ref", "==", resource.id);
+    for (let i = 1; i < doc.numPages + 1; i++) {
       promises.push(new Promise(
         async (resolve, reject) => {
           let page = await doc.getPage(i);
@@ -50,8 +52,8 @@
         }
       ))
     }
-    let embeddings = await Promise.all(promises);
-    $allEmbeddings = [...$allEmbeddings, ...embeddings];
+    await Promise.all(promises);
+    await Embedding.collection.fetch(allEmbeddings);
   }
 
   onMount(async ()=> {
@@ -107,20 +109,26 @@
     {:else}
       <PdfPage index={pageIdx}/>
     {/if}
-    <div class="absolute right-2 top-2 flex flex-col space-y-1">
+    <div class="absolute right-2 top-2 flex flex-col space-y-1 z-10">
       <ModalEntry Component={Form} 
                   modal={{type: "modal"}}
                   data={embeddingForm}
                   >
         <Icon icon="upload" tooltip="Create embeddings" class="w-12 h-12 text-yellow-400"/>
       </ModalEntry>
-      <ModalEntry 
-          Component={PdfSearch} 
-          modal={{type: "popup"}}
-          {resource} {doc}
-        >
-        <Icon icon="search" tooltip="Semantic search" class="w-12 h-12 text-yellow-400"/>
-      </ModalEntry>
+      <div class="relative">
+        <Popup>
+          <Icon slot="entry" icon="search" tooltip="Semantic search" 
+                class="w-12 h-12 text-yellow-400"/>
+          <div class="w-[40vw] h-[70vh] absolute top-0 
+                      x-float-left bg-opacity-50 bg-gray-200 overflow-y-scroll"
+          >
+            <PdfSearch {resource} {pageLabels} 
+                  onSelect={(item) => {pageIdx = item.pageIdx;}}
+              />
+          </div>
+        </Popup>
+      </div>
     </div>
   </Context>
   {/await} 

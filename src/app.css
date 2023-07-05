@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer components {
+  .x-float-left {
+    transform: translateX(-100%);
+    left: -12px;
+  }
   .x-icon {
     @apply relative flex items-center justify-center
     h-12 w-12 mt-2 mb-2 mx-auto shadow-lg
@@ -49,6 +53,7 @@
   .test {
     @apply 
   }
+
 
   
 
