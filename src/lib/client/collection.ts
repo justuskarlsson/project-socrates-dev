@@ -6,7 +6,9 @@ import { getDoc, getDocs, collection, CollectionReference,
         writeBatch,
         type WhereFilterOp,
         FieldPath,
-        setDoc
+        setDoc,
+        orderBy,
+        onSnapshot
       } 
 from 'firebase/firestore';
 
@@ -43,6 +45,20 @@ export class Collection<T extends DataItem> {
     return items;
   }
 
+  async fetchAndListen(store: Writable<T[]>) : Promise<void> {
+    const q = query(
+      this.collection,
+      where("user", "==", user!.uid),
+    );
+    return new Promise((resolve, reject) => {
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        let items = this.mapSnapshot(snapshot);
+        store.set(items);
+        resolve();
+      });
+    })
+  }
+
   private mapSnapshot(snapshot: QuerySnapshot<DocumentData>) {
     let items: T[] = snapshot.docs.map((doc) => {
       let obj = {
@@ -62,17 +78,7 @@ export class Collection<T extends DataItem> {
     return items;
   }
 
-  /**
-   * Will not be needed if we always fetch everything initially.
-   */
-  async fetchWhere(otherKey: string, otherVal: string) : Promise<T[]>{
 
-    let snapshot =  await getDocs(query(
-      this.collection,
-      where(otherKey, "==", otherVal)
-    ));
-    return this.mapSnapshot(snapshot);
-  }
 
 
   private addHelper(input: T | Partial<T>) {

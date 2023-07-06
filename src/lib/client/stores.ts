@@ -290,14 +290,14 @@ export const allResources = Resource.all;
 
 export async function loadAll() {
   const promises: Promise<any>[] = [
-    Course.collection.fetch(allCourses),
-    Lesson.collection.fetch(allLessons),
-    Message.collection.fetch(allMessages),
-    Embedding.collection.fetch(allEmbeddings),
-    MessageGroup.collection.fetch(allMessageGroups),
-    Prompt.collection.fetch(allPrompts),
-    Flashcard.collection.fetch(allFlashcards),
-    Resource.collection.fetch(Resource.all),
+    Course.collection.fetchAndListen(allCourses),
+    Lesson.collection.fetchAndListen(allLessons),
+    Message.collection.fetchAndListen(allMessages),
+    Embedding.collection.fetchAndListen(allEmbeddings),
+    MessageGroup.collection.fetchAndListen(allMessageGroups),
+    Prompt.collection.fetchAndListen(allPrompts),
+    Flashcard.collection.fetchAndListen(allFlashcards),
+    Resource.collection.fetchAndListen(Resource.all),
     initIdb()
   ];
   await Promise.all(promises);

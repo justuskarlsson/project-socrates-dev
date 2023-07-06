@@ -11,6 +11,8 @@
 	import Icon from './Icon.svelte';
 	import PdfSearch from './PdfSearch.svelte';
 	import Popup from './Popup.svelte';
+	import type { OutlineNode } from './PdfOutline.svelte';
+	import PdfOutline from './PdfOutline.svelte';
 
   export let resource: Resource;
   
@@ -19,11 +21,13 @@
   let pageIdx = resource.currentPageIdx;
   let doubleSided = false;
   let pageLabels: string[] | null = null;
+  let outlineNodes: OutlineNode[] = [];
 
   const loadPromise = new Promise<PDFDocumentProxy>(async (resolve, reject) => {
     let buffer: ArrayBuffer = await Resource.load(resource);
     doc = await pdfJs.getDocument(buffer).promise;
     pageLabels = await doc.getPageLabels();
+    outlineNodes = await doc.getOutline();
     decideDoubleSided()
     resolve(doc);
   })
@@ -113,6 +117,7 @@
     {:else}
       <PdfPage index={pageIdx}/>
     {/if}
+    <PdfOutline nodes={outlineNodes} />
     <div class="absolute right-2 top-2 flex flex-col space-y-1 z-10">
       <ModalEntry Component={Form} 
                   modal={{type: "modal"}}

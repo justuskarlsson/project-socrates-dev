@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
-import  { initializeApp,  } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import  { initializeApp } from "firebase/app";
+import { getFirestore, initializeFirestore, persistentLocalCache, setLogLevel } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 import { openDB, type IDBPDatabase } from 'idb';
@@ -16,11 +16,15 @@ const firebaseConfig = {
   measurementId: "G-H518HFTG5R"
 };
 
+// setLogLevel("debug");
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 
 
-export const db = getFirestore(app);
+// export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({cacheSizeBytes: 200_000_000})
+})
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
@@ -42,3 +46,4 @@ export async function initIdb(){
     },
   });
 };
+
