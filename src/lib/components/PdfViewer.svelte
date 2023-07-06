@@ -63,7 +63,7 @@
     console.log("Fetching new embeddings..");
     await Embedding.collection.fetch(allEmbeddings);
   }
-
+  $: console.log(pageIdx);
   onMount(async ()=> {
     document.addEventListener("keydown", async (e) => {
       let inc = doubleSided ? 2 : 1;
@@ -117,7 +117,10 @@
     {:else}
       <PdfPage index={pageIdx}/>
     {/if}
-    <PdfOutline nodes={outlineNodes} />
+    <div class="absolute bottom-0 
+                h-[40px] w-full z-10">
+      <PdfOutline nodes={outlineNodes} />
+    </div>
     <div class="absolute right-2 top-2 flex flex-col space-y-1 z-10">
       <ModalEntry Component={Form} 
                   modal={{type: "modal"}}
