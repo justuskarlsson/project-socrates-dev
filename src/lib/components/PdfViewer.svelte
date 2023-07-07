@@ -64,21 +64,29 @@
     await Embedding.collection.fetch(allEmbeddings);
   }
   $: console.log(pageIdx);
+
+  function nextPage(){
+    pageIdx = Math.min(pageIdx + (doubleSided ? 2 : 1), doc?.numPages || 1000);
+    Resource.collection.update(resource.id, {
+        currentPageIdx: pageIdx
+    })
+  }
+
+  function prevPage(){
+    pageIdx = Math.max(pageIdx - (doubleSided ? 2 : 1), 0);
+    Resource.collection.update(resource.id, {
+        currentPageIdx: pageIdx
+    })
+  }
+
   onMount(async ()=> {
     document.addEventListener("keydown", async (e) => {
-      let inc = doubleSided ? 2 : 1;
       if (e.key === "ArrowRight") {
-        pageIdx = Math.min(pageIdx + inc, doc?.numPages || 1000);
+        nextPage();
       }
       else if(e.key === "ArrowLeft") {
-        pageIdx = Math.max(pageIdx - inc, 0);
+        prevPage();
       }
-      else {
-        return;
-      }
-      Resource.collection.update(resource.id, {
-        currentPageIdx: pageIdx
-      })
     })
   })
 
@@ -101,24 +109,42 @@
   }
 
   let startX: number = 0;
+  let startY: number = 0;
   let endX: number = 0;
+  let endY: number = 0;
+  let isMultiTouch: boolean = false;
 
   const touchStart = (e: TouchEvent) => {
+    // Start tracking the touch points
+    isMultiTouch = e.touches.length > 1;
     startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  };
+
+  const touchMove = (e: TouchEvent) => {
+    // If at any time we detect multiple touch points, cancel the swipe gesture
+    if(e.touches.length > 1){
+      isMultiTouch = true;
+    }
   };
 
   const touchEnd = (e: TouchEvent) => {
-    endX = e.changedTouches[0].clientX;
-    handleSwipe();
+    if(!isMultiTouch){
+      endX = e.changedTouches[0].clientX;
+      endY = e.changedTouches[0].clientY;
+      handleSwipe();
+    }
   };
 
   function handleSwipe() {
-    if (startX - endX > 100) { // Swipe left
-      alert('Swipe left');
-    } else if (startX - endX < -100) { // Swipe right
-      alert('Swipe right');
+    const threshold = 100;
+    if (startX - endX > threshold) { // Swipe left
+      nextPage();
+    } else if (startX - endX < -threshold) { // Swipe right
+      prevPage();
     }
   };
+
 </script>
 
 <svelte:window on:resize={decideDoubleSided} />
@@ -126,6 +152,7 @@
           flex flex-row" 
   on:touchstart={touchStart}
   on:touchend={touchEnd}
+  on:touchmove={touchMove}
   bind:this={root}>
   
   {#await loadPromise}
