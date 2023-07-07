@@ -100,9 +100,23 @@
     
   }
 
+  function touchStart(){
+
+  }
+
+  function touchEnd(){
+    alert("Touch end");
+  }
+
 </script>
+
 <svelte:window on:resize={decideDoubleSided} />
-<div class="relative h-full w-full bg-slate-200 flex flex-row" bind:this={root}>
+<div class="relative h-full w-full bg-slate-200 
+          flex flex-row" 
+  on:touchstart={touchStart}
+  on:touchend={touchEnd}
+  bind:this={root}>
+  
   {#await loadPromise}
     <LoadingSpinner />
   {:then doc}
