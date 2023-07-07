@@ -28,23 +28,37 @@
     let page = await doc.getPage(index);
     let viewport;
     let scaleUsed: number;
+
+    let devicePixelRatio = window.devicePixelRatio || 1;
+
     if (scale === "fit") {
       viewport = page.getViewport({scale: 1.0});
-      scaleUsed = pdfContainer.clientHeight / viewport.height;
-      viewport = page.getViewport({scale: scaleUsed});
+      let verticalScale = pdfContainer.clientHeight / viewport.height;
+      let horizontalScale = pdfContainer.clientWidth / viewport.width;
+      // choose the smaller scale to make sure both dimensions fit within the container
+      scaleUsed = Math.min(verticalScale, horizontalScale);
+      viewport = page.getViewport({scale: scaleUsed * devicePixelRatio});
     } else {
-      viewport = page.getViewport({scale});
       scaleUsed = scale;
+      viewport = page.getViewport({scale: scaleUsed * devicePixelRatio});
     }
-    textLayer.style.setProperty('--scale-factor', scaleUsed.toString());
-    canvas.height = viewport.height;
+
+    canvas.style.width = `${viewport.width / devicePixelRatio}px`;
+    canvas.style.height = `${viewport.height / devicePixelRatio}px`;
     canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    textLayer.style.width = `${viewport.width / devicePixelRatio}px`;
+    textLayer.style.height = `${viewport.height / devicePixelRatio}px`;
+    textLayer.style.setProperty('--scale-factor', `${scaleUsed}`);
+
+    let context = canvas.getContext("2d")!;
+    
     await page.render({
-      canvasContext: canvas.getContext("2d")!,
+      canvasContext: context,
       viewport
-    })
-    // // The tree TOC
-    // let a = await doc.getOutline();
+    });
+
     let textContent = await page.getTextContent();
     textLayer.innerHTML = '';
 
@@ -63,11 +77,10 @@
       
       item.innerHTML = item.innerHTML.replace(
           new RegExp(`(${searchText})`, 'gi'), injectHighlight);
-    
-      
     }
     renderingPage = false;
   }
+
 
   function injectHighlight(matched: string) {
     return `<span class="highlight">${matched}</span>`;
