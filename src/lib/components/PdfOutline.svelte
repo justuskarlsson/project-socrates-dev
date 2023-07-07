@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export interface OutlineNode {
+  export interface OutlineNodeOrg {
     title: string;
     bold: boolean;
     italic: boolean;
@@ -13,49 +13,69 @@
     unsafeUrl: string | undefined;
     newWindow: boolean | undefined;
     count: number | undefined;
-    items: OutlineNode[];
+    items: OutlineNodeOrg[];
   };
+
+  export interface OutlineNode extends OutlineNodeOrg {
+    share: number;
+    pageIndex: number;
+    // pageLabel: string;
+  }
 </script>
 <script lang="ts">
 	import type { PDFDocumentProxy } from "pdfjs-dist";
 	import type { RefProxy } from "pdfjs-dist/types/src/display/api";
 	import { getContext } from "svelte";
 
-  export let nodes: OutlineNode[];
+  export let nodes: OutlineNodeOrg[];
+  export let pageIdx: number;
+  export let level: number = 0;
 
   let doc = getContext<PDFDocumentProxy>("doc");
   let numPages = doc.numPages;
-  let prevPage = 1;
-  let sharesPromise = nodes.map(async (node) => {
-    if (node.dest instanceof Array) {
-      let cur = await doc.getPageIndex(node.dest[0] as RefProxy) + 1;
-      // let cur = node.dest[0].num as number;
-      let size = cur - prevPage + 1;
-      console.log(size, cur, node.color)
-      prevPage = cur;
-      return size / numPages;
+  async function createNodes(){
+    let res: OutlineNode[] = [];
+    let prevPage = 1;
+    for (let node of nodes) {
+      let share: number;
+      let cur: number;
+      if (node.dest instanceof Array) {
+        cur = await doc.getPageIndex(node.dest[0] as RefProxy) + 1;
+        // let cur = node.dest[0].num as number;
+        let size = cur - prevPage + 1;
+        prevPage = cur;
+        share = size / numPages;
+      } else {
+        continue;
+      }
+      res.push({
+        ...node,
+        share,
+        pageIndex: cur,
+      })
     }
-    return 1 / nodes.length;
-  })
-  // shares = Promise.allSettled(shares);
-  console.log(sharesPromise);
+    return res;
+  }
+
   function mapToHue(idx: number) {
     let hue = (idx / nodes.length) * 360;
     let str = Math.round(hue).toString();
     console.log(str);
     return str;
   }
+
 </script>
-<div class="w-full h-full flex flex-row">
-  {#await Promise.all(sharesPromise)}
+<div class="w-full h-full flex flex-row justify-center relative">
+  {#await createNodes()}
   <!-- promise is pending -->
-  {:then shares}
+  {:then nodes}
     {#each nodes as node, i}
     <div class="group relative" 
-      style="width: {(100 * shares[i]).toFixed(0)}%;"
+      style="width: {(100 * node.share).toFixed(4)}%;"
         >
       <div class="block w-full h-full"
            style="background-color: hsla({mapToHue(i)}, 30%, 91%);"
+           on:click={()=> { pageIdx = node.pageIndex; }}
       >
       </div>
     
@@ -63,7 +83,13 @@
         {node.title}
       </span>
     </div>
+    {#if level === 0}
+      <div class="absolute h-full w-2 bg-opacity-10 bg-green-500 "
+          style="left: {100 * pageIdx / numPages}%;"
+      >
 
+      </div>
+    {/if}
     {/each}
   {/await}
 

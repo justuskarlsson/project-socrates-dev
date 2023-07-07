@@ -11,7 +11,7 @@
 	import Icon from './Icon.svelte';
 	import PdfSearch from './PdfSearch.svelte';
 	import Popup from './Popup.svelte';
-	import type { OutlineNode } from './PdfOutline.svelte';
+	import type { OutlineNodeOrg } from './PdfOutline.svelte';
 	import PdfOutline from './PdfOutline.svelte';
 
   export let resource: Resource;
@@ -21,7 +21,7 @@
   let pageIdx = resource.currentPageIdx;
   let doubleSided = false;
   let pageLabels: string[] | null = null;
-  let outlineNodes: OutlineNode[] = [];
+  let outlineNodes: OutlineNodeOrg[] = [];
 
   const loadPromise = new Promise<PDFDocumentProxy>(async (resolve, reject) => {
     let buffer: ArrayBuffer = await Resource.load(resource);
@@ -118,8 +118,10 @@
       <PdfPage index={pageIdx}/>
     {/if}
     <div class="absolute bottom-0 
-                h-[40px] w-full z-10">
-      <PdfOutline nodes={outlineNodes} />
+                h-[40px] w-full z-10 shadow-xl"
+        style="transform: translateY(25%);"
+                >
+      <PdfOutline nodes={outlineNodes} bind:pageIdx={pageIdx}/>
     </div>
     <div class="absolute right-2 top-2 flex flex-col space-y-1 z-10">
       <ModalEntry Component={Form} 
