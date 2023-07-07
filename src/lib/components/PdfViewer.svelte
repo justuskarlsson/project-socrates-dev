@@ -100,14 +100,25 @@
     
   }
 
-  function touchStart(){
+  let startX: number = 0;
+  let endX: number = 0;
 
-  }
+  const touchStart = (e: TouchEvent) => {
+    startX = e.touches[0].clientX;
+  };
 
-  function touchEnd(){
-    alert("Touch end");
-  }
+  const touchEnd = (e: TouchEvent) => {
+    endX = e.changedTouches[0].clientX;
+    handleSwipe();
+  };
 
+  function handleSwipe() {
+    if (startX - endX > 100) { // Swipe left
+      alert('Swipe left');
+    } else if (startX - endX < -100) { // Swipe right
+      alert('Swipe right');
+    }
+  };
 </script>
 
 <svelte:window on:resize={decideDoubleSided} />
