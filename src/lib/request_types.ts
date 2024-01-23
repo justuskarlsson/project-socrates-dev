@@ -1,10 +1,8 @@
-import type {ChatCompletionRequestMessage} from 'openai'
-
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
 
 export interface Chat {
-  messages: ChatCompletionRequestMessage [];
+  messages: ChatCompletionMessageParam [];
   model?: string;
 }
 
-export type { ChatCompletionRequestMessage };
-
+export type ChatCompletionRequestMessage = ChatCompletionMessageParam;

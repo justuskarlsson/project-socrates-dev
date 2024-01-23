@@ -1,24 +1,22 @@
-import "./init_firebase"
+import { firebaseAdminInitialized } from "./init_firebase";
 import admin from "firebase-admin";
 import { openai } from "./server";
 
-export const db = admin.firestore();
-
-// db.collection("").
-
-class Collection {
-  
-}
+export const db = firebaseAdminInitialized ? admin.firestore() : null;
 
 export async function getEmbedding(input: string): Promise<number[]> {
-  const response = await openai.createEmbedding({
+  const response = await openai.embeddings.create({
     model: "text-embedding-ada-002",
     input
-  })
-  return response.data.data[0].embedding;
+  });
+  return response.data[0].embedding;
 }
 
 export async function addEmbeddings(){
+  if (!db) {
+    console.warn("[db] Firebase Admin not initialized — cannot add embeddings server-side.");
+    return;
+  }
   console.log("ADD EMBEDDINGS")
   const embeddingsDb = db.collection("embeddings");
   const messagesDb = db.collection("messages");

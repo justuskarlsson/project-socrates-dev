@@ -186,8 +186,9 @@
         <Popup>
           <Icon slot="entry" icon="search" tooltip="Semantic search" 
                 class="w-12 h-12 text-yellow-400"/>
-          <div class="w-[40vw] h-[70vh] absolute top-0 
-                      x-float-left bg-opacity-50 bg-gray-200 overflow-y-scroll"
+          <div class="w-[40vw] h-[70vh] absolute top-0
+                      x-float-left bg-white rounded-lg shadow-lg
+                      border border-gray-200 overflow-y-auto"
           >
             <PdfSearch {resource} {pageLabels} 
                   onSelect={(item) => {pageIdx = item.pageIdx;}}

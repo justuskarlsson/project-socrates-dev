@@ -3,7 +3,7 @@ import { openai } from "$lib/server/server"
 import type { RequestEvent } from "./$types";
 
 export async function GET(request: RequestEvent) {
-  const res = await openai.listModels();
+  const res = await openai.models.list();
   return json({
     models: res.data
   });

@@ -1,7 +1,6 @@
 
 import { get, writable, type Writable } from 'svelte/store';
 import { Collection, DataItem } from "./collection"
-import type { ChatCompletionRequestMessageRoleEnum } from 'openai';
 import { arrayRemove } from 'firebase/firestore';
 import { idb, initIdb, storage, user, userStore } from './firebase';
 import {
@@ -145,7 +144,7 @@ export class MessageGroup extends DataItem {
 
 export class Message extends DataItem {
   lessonId: string = "";
-  role: ChatCompletionRequestMessageRoleEnum;
+  role: "system" | "user" | "assistant";
   content: string;
   // For mind map
 

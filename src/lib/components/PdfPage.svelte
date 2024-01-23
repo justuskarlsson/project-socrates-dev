@@ -13,7 +13,7 @@
   let textLayer: HTMLDivElement;
 
   let renderingPage = false;
-  let searchText = "Extracellular Fluid";
+  let searchText = "";
 
 
   let doc = getContext<PDFDocumentProxy>("doc");
@@ -71,12 +71,14 @@
 
     await textLayerRenderTask.promise;
     
-    for (let i = 0; i < textLayer.children.length; i++) {
-      let item = textLayer.children.item(i);
-      if (!item) continue;
-      
-      item.innerHTML = item.innerHTML.replace(
-          new RegExp(`(${searchText})`, 'gi'), injectHighlight);
+    if (searchText) {
+      for (let i = 0; i < textLayer.children.length; i++) {
+        let item = textLayer.children.item(i);
+        if (!item) continue;
+
+        item.innerHTML = item.innerHTML.replace(
+            new RegExp(`(${searchText})`, 'gi'), injectHighlight);
+      }
     }
     renderingPage = false;
   }

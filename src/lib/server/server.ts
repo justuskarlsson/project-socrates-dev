@@ -1,11 +1,11 @@
-import { Configuration, OpenAIApi, type CreateCompletionResponse, ChatCompletionRequestMessageRoleEnum } from "openai";
+import OpenAI from "openai";
 
-
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-export const openai = new OpenAIApi(configuration);
 
-// const model = "text-davinci-003"
-export const model = "gpt-3.5-turbo"
-// export const model = "gpt-4"
+export { openai };
+
+// export const model = "gpt-3.5-turbo"
+export const model = "gpt-4o-mini"
+// export const model = "gpt-4o"

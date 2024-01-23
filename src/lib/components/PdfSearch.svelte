@@ -25,10 +25,17 @@
 
 
   let searchResults: SearchResult[] = [];
+  let searching = false;
 
   let docEmbeddings: Embedding[] = [];
   let searchPhrase: string = "";
   let refEmbeddings: tf.Tensor2D;
+
+  function relevancePercent(distance: number): string {
+    // Convert Euclidean distance to a rough relevance % (lower distance = higher relevance)
+    const pct = Math.max(0, Math.min(100, 100 - (distance * 4)));
+    return pct.toFixed(0);
+  }
 
   // Works when popup
   let doc = getContext<PDFDocumentProxy>("doc");
@@ -45,6 +52,7 @@
   }
 
   async function search(){
+    searching = true;
     let query = await Embedding.createRaw(searchPhrase);
     let inputEmbedding = tf.tensor(query.embedding) as tf.Tensor1D;
 
@@ -72,6 +80,7 @@
       }))
     }
     searchResults = await Promise.all(promises);
+    searching = false;
   }
 
   function maybeSearch(e: KeyboardEvent){
@@ -84,26 +93,31 @@
 </script>
 
 
-<div class="flex flex-col p-4 space-y-2">
+<div class="flex flex-col p-4 space-y-3">
   <input on:keydown={maybeSearch}
         autofocus
         bind:value={searchPhrase}
-        class="input input-bordered" 
-        placeholder="Search.." />
-  {#each searchResults as result}
-     <div class="w-full flex flex-row border-2  rounded-md p-2 space-x-4
-                 bg-gray-300 border-gray-200 select-none cursor-pointer"
+        class="input input-bordered bg-white text-gray-900 w-full"
+        placeholder="Search documents..." />
+  {#if searching}
+    <div class="text-sm text-gray-500 italic">Searching...</div>
+  {/if}
+  {#each searchResults as result, i}
+     <div class="w-full flex flex-col border rounded-lg p-3
+                 bg-white border-gray-300 shadow-sm
+                 hover:border-amber-400 hover:shadow-md
+                 select-none cursor-pointer transition-all"
                 on:click={() => onSelect(result)}
                  >
-        <div class="flex flex-col">
-          <div>
-            {result.pageLabel}
-          </div>
-          <div>
-            {result.distance.toFixed(3)}
-          </div>
+        <div class="flex flex-row items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+            Page {result.pageLabel}
+          </span>
+          <span class="text-xs text-gray-400">
+            {relevancePercent(result.distance)}% match
+          </span>
         </div>
-        <div>
+        <div class="text-sm text-gray-700 leading-relaxed line-clamp-4">
           {result.preview}
         </div>
      </div>
