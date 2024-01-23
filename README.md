@@ -1,18 +1,13 @@
-# create-svelte
+# Project Socrates
+> A learning platform using GPT-4 api
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Features
+* Lesson planning - Create a course on a subject, and then add planned lesson sessions with a summary on what to go over. In each lesson session, the student/user will chat with the teacher (GPT-4) about the lesson subject. After the lesson is done, the teacher can quiz the student on the lesson content.
+* Flashcards - Abillity to ask GPT-4 to create flashcards on the lesson subject. The student can then use the flashcards to learn. The flashcards use spaced repetion, so that the student won't forget glossaries in a couple of weeks.
+* Mindmap mode - Abillity to have conversation topics spread out in a mind map using leaflet-js.
+* Smart PDF documents - Upload pdf documents and do smart searches using GPT-4 and Token embeddings. 
 
-## Creating a project
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
 
 ## Developing
 
@@ -25,14 +20,4 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
 
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
